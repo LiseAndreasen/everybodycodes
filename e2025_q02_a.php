@@ -108,8 +108,14 @@ for($i=$a["x"];$i<=$b["x"];$i+=10) {
 				break;
 			}
 		}
+		if($engraving == 0) {
+			echo ".";
+		} else {
+			echo "X";
+		}
 		$engraved_count += $engraving;
 	}
+	echo "\n";
 }
 
 printf("Result 2: %d\n", $engraved_count);
@@ -118,9 +124,6 @@ printf("Result 2: %d\n", $engraved_count);
 
 // top left corner
 $a = get_input($input3);
-
-$thousand["x"] = 1000;
-$thousand["y"] = 1000;
 
 // bottom right corner
 $b = add_complex($a, $thousand);
@@ -149,9 +152,18 @@ for($i=$a["x"];$i<=$b["x"];$i+=1) {
 				break;
 			}
 		}
+		/*
+		if($engraving == 0) {
+			echo ".";
+		} else {
+			echo "X";
+		}
+		*/
 		$engraved_count += $engraving;
 	}
+	//echo "\n";
 }
+
 print("\n");
 
 printf("Result 3: %d\n", $engraved_count);
