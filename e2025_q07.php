@@ -5,7 +5,7 @@
 
 $input1 = file_get_contents('./everybody_codes_e2025_q07_p1.txt', true);
 $input2 = file_get_contents('./everybody_codes_e2025_q07_p2.txt', true);
-$input3 = file_get_contents('./everybody_codes_e2025_q07_p3_ex2.txt', true);
+$input3 = file_get_contents('./everybody_codes_e2025_q07_p3.txt', true);
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -77,24 +77,23 @@ function check_names($map, $print) {
 }
 
 function permute_names($prefix, $rules) {
-	$good_names = 0;
+	global $good_names;
 	$name_lgt = strlen($prefix);
 	if(7 <= $name_lgt && $name_lgt <= 11) {
 		// this is actually a good name too
-		$good_names += 1;
+		$good_names[] = $prefix;
 	}
 	if($name_lgt == 11) {
 		// no further permutations possible
-		return $good_names;
+		return 1;
 	}
 	$last_letter = substr($prefix, -1, 1);
 	if(isset($rules[$last_letter])) {
 		foreach($rules[$last_letter] as $next_letter) {
 			$next_prefix = $prefix . $next_letter;
-			$good_names += permute_names($next_prefix, $rules);
+			permute_names($next_prefix, $rules);
 		}
 	}
-	return $good_names;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -109,13 +108,18 @@ check_names($map, 2);
 $map = get_input($input3);
 $prefixes = $map[0];
 $rules = $map[1];
-$good_names = 0;
+$good_names = array();
 foreach($prefixes as $prefix) {
 	$prefix_good = check_this_name($prefix, $rules);
 	if($prefix_good == 1) {
-		$good_names += permute_names($prefix, $rules);
+		permute_names($prefix, $rules);
 	}
 }
-printf("Good names.: %d\n", $good_names);
+
+// https://www.reddit.com/r/everybodycodes/comments/1ov2yq0/2025_q7_part_3_counts_too_high_help/
+// names should be unique
+$good_names = array_unique($good_names);
+printf("Good names.: %d\n", sizeof($good_names));
+
 
 ?>
