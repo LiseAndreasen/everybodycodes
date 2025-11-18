@@ -52,6 +52,25 @@ function move_ducks($dir, $max, $rounds, $rounds_used) {
 	return $rounds_used;
 }
 
+function move_ducks2() {
+	// this version uses the knowledge, that all the ducks missing
+	// from the left part of the columns, all require 1 round
+	global $data;
+	
+	$average = array_sum($data) / sizeof($data);
+	
+	printf("Average number of ducks in columns: %20d\n", $average);
+	
+	$rounds = 0;
+	foreach($data as $column) {
+		if($column < $average) {
+			$rounds += $average - $column;
+		}
+	}
+	
+	return $rounds;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -92,9 +111,30 @@ print_ducks($data, $rounds_used);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2025_q11_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+// https://www.reddit.com/r/everybodycodes/comments/1ozvbnq/comment/npekmd0/
+// Key insight 2 is that each round in a phase
+//    (phase 2)
+// effectively only moves one duck from one column to another. 
+// i can't quite prove that this is the case
+
+$file3 = './everybody_codes_e2025_q11_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+$columns = sizeof($data);
+
+$rounds_used = 0;
+
+print("Ducks ready for phase 1.\n");
+// first move right
+$rounds_used = move_ducks("r", "n", 0, $rounds_used);
+//print_ducks($data, $rounds_used);
+printf("Rounds used.......................: %20d\n", $rounds_used);
+// note: no rounds!
+
+print("And now phase 2.\n");
+
+// then move left
+$rounds_used = move_ducks2();
+printf("Rounds used.......................: %20d\n", $rounds_used);
 
 ?>
