@@ -146,8 +146,9 @@ function dragon_moves() {
 	$data_dragon = $data_dragon2;
 }
 
-/*
 function move_sheep_and_dragon($data, $sheep_list, $dragon, $sofar) {
+	$perms = 0;
+/*
 
 //printf("Sheep: %d Dragon (%d,%d)\n", sizeof($sheep_list), $dragon[0], $dragon[1]);
 
@@ -182,7 +183,6 @@ print("Dragon off map\n");
 		return 0;
 	}
 	
-	$perms = 0;
 
 	// it is possible the dragon just moved close to a sheep
 	// not in a shelter
@@ -246,9 +246,9 @@ print($sofar."\n");
 	}
 	
 	$states_seen[$str3] = $perms;
+*/
 	return $perms;
 }
-*/
 
 // first time i am trying this!
 function memoize($func) {
@@ -289,7 +289,6 @@ $num_ways = memoize(function($dragon, $sheep, $hiding, $curr_move) use (&$num_wa
 				unset($can_move[$key]);
 			}
 		}
-//print_r($can_move);		
 		if(sizeof($can_move) > 0) {
 			$answer = 0;
 			foreach($can_move as $key => $this_sheep) {
@@ -427,9 +426,6 @@ for($k=0;$k<$dragon_steps2;$k++) {
 			}
 		}
 	}
-
-//print_dragon_and_sheep($data_dragon, $data_sheep);
-
 }
 
 printf("Result 2: %d\n", $dead_sheep);
@@ -482,10 +478,6 @@ $delta = array(
 $perms = $num_ways($dragon, $sheep, $hiding, "S");
 
 /*
-//print_r($sheep_list);
-
-//print_r($dragon);
-
 $perms = move_sheep_and_dragon($data, $sheep_list, $dragon, "");
 */
 
