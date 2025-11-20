@@ -87,14 +87,16 @@ function burn_barrels($data, $data2) {
 	return $barrels;
 }
 
-function burn_barrels_best($data, $data2, $fires) {
+function burn_barrels_best($data, $data2, $fires, $opt_fires) {
 	global $map_height, $map_width;
 
 	$barrels_max = 0;
 	$progress = 0;
 	// start all possible fires, choose the best one
-	for($jj=0;$jj<$map_height;$jj++) {
-		for($ii=0;$ii<$map_width;$ii++) {
+	foreach($opt_fires as $opt_fire) {
+			$ii = $opt_fire[0];
+			$jj = $opt_fire[1];
+			
 			$progress++;
 			if($progress % 100 == 0) {
 				print(".");
@@ -121,10 +123,49 @@ function burn_barrels_best($data, $data2, $fires) {
 				$best_ii1 = $ii;
 				$best_jj1 = $jj;
 			}
-		}
 	}
 	
 	return array($best_ii1, $best_jj1, $barrels_max);
+}
+
+function barrels_opt($data) {
+	global $map_height, $map_width;
+	
+	for($j=0;$j<$map_height;$j++) {
+		for($i=0;$i<$map_width;$i++) {
+			// is this a local maximum?
+			// if a certain adjacent barrell is actually there
+			// and that adjacent barrell is bigger
+			// no
+			if(isset($data[$i-1][$j]) && $data[$i-1][$j] > $data[$i][$j]) {
+				$data2[$i-1][$j] = "*";
+				continue;
+			}
+			if(isset($data[$i+1][$j]) && $data[$i+1][$j] > $data[$i][$j]) {
+				$data2[$i+1][$j] = "*";
+				continue;
+			}
+			if(isset($data[$i][$j-1]) && $data[$i][$j-1] > $data[$i][$j]) {
+				$data2[$i][$j-1] = "*";
+				continue;
+			}
+			if(isset($data[$i][$j+1]) && $data[$i][$j+1] > $data[$i][$j]) {
+				$data2[$i][$j+1] = "*";
+				continue;
+			}
+			// otherwise yes
+			$opt_fires[] = array($i, $j);
+		}
+	}
+	return $opt_fires;
+}
+
+function print_fires($fires) {
+	print("All good fires:\n");
+	foreach($fires as $fire) {
+		printf("x: %3d y: %d fires: %5d\n", $fire[0], $fire[1], $fire[2]);
+	}
+	print("\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -155,7 +196,7 @@ printf("Result 1: %d\n", $barrels);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2025_q' . $quest . '_p2.txt';
+$file2 = './everybody_codes_e2025_q' . $quest . '_p2_ex1.txt';
 $input = file_get_contents($file2, true);
 $data = get_input($input);
 $data = pivot($data);
@@ -182,7 +223,7 @@ printf("Result 2: %d\n", $barrels);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2025_q' . $quest . '_p3.txt';
+$file3 = './everybody_codes_e2025_q' . $quest . '_p3_ex2.txt';
 $input = file_get_contents($file3, true);
 $data = get_input($input);
 $data = pivot($data);
@@ -190,14 +231,29 @@ $data = pivot($data);
 $map_width = sizeof($data);
 $map_height = sizeof($data[0]);
 
+// an optimal fire is also a local maximum
+// if 2 barrels have sizes a and a, either one could be the best
+// if 2 barrels have sizes a and b, a < b, b is preferable
+// a fire beginning with a wouldn't include b
+// a fire beginning with b would include a
+// the b-fire would be bigger
+// so barrell a can't be one of the starting points
+
+$opt_fires = barrels_opt($data);
+printf("\nOptimal places to start fires: %d\n\n", sizeof($opt_fires));
+
 $fires = array();
-$best_b1 = burn_barrels_best($data, $data2, $fires);
+$best_b1 = burn_barrels_best($data, $data2, $fires, $opt_fires);
 $fires[] = $best_b1;
+print_fires($fires);
 
-$best_b2 = burn_barrels_best($data, $data2, $fires);
+$best_b2 = burn_barrels_best($data, $data2, $fires, $opt_fires);
 $fires[] = $best_b2;
+print_fires($fires);
 
-$best_b3 = burn_barrels_best($data, $data2, $fires);
+$best_b3 = burn_barrels_best($data, $data2, $fires, $opt_fires);
+$fires[] = $best_b3;
+print_fires($fires);
 
 printf("Result 3: %d\n", $best_b3[2]);
 
