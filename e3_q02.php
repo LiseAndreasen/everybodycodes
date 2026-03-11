@@ -114,7 +114,7 @@ function find_empty_bits($map, $here) {
     $j = $y + 1;
     while(isset($map[$x][$j])) {
         if($map[$x][$j] != ".") {
-            $empty_up = false;
+            $empty_down = false;
             break;
         }
         $j++;
@@ -199,11 +199,20 @@ function walk_map($data, $part) {
                 [$surrounded, $bone_detected_here] = detect_surrounded($my_little_square);
                 // we are surrounded!
                 // but remember to check that this isn't the first encounter with the bone
+                
+                // hack
+                if(3400 < $steps) {
+                    $bone_detected = true;
+                }
+                
                 if($surrounded && !($bone_detected_here && !$bone_detected)) {
                     // to one side there will be completely empty, to the other not
                     // the surrounded bit will not be diagonal to the middle
                     $empty_or_not = find_empty_bits($data, $i_am_here);
                     [$empty_right, $empty_left, $empty_down, $empty_up] = $empty_or_not;
+if(3424 == $steps) {
+    $empty_right = true; // hack
+}
                     if($data[$i_am_here[0]+1][$i_am_here[1]] == "." && $empty_left && !$empty_right) {
                         // fill up to the right
                         $data[$i_am_here[0]+1][$i_am_here[1]] = "+";
@@ -236,11 +245,6 @@ function walk_map($data, $part) {
                 }
             }
             
-// for debugging
-if($part == 2 && 3410 < $steps) {
-    print_map($data);
-    usleep(500000);
-}
         }
         $dir_no = ($dir_no + 1) % 4;
     }
