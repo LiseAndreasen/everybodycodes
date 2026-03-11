@@ -4,7 +4,9 @@
 // constants
 
 $quest = "02";
-$dir = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+$dir_small = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+$dir_large = [[0, -1], [0, -1], [0, -1], [1, 0], [1, 0], [1, 0],
+    [0, 1], [0, 1], [0, 1], [-1, 0], [-1, 0], [-1, 0]];
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -18,7 +20,8 @@ function get_input($input) {
 			// add extra space before and after - hack
 			$extra_line = array_fill(0, $extra_space, ".");
 			$line = $line;
-			$data[] = array_merge($extra_line, str_split($line), $extra_line);
+			$data[] = array_merge($extra_line, str_split($line),
+			    $extra_line);
 		}
 	}
 	// add extra space before and after - hack
@@ -54,87 +57,134 @@ function print_map($map) {
     echo "\n";
 }
 
-// 3x3 square
-function detect_surrounded($square) {
+// check adjacent cells (no diagonals) to maybe fill
+function fill_closeby(&$map, $cell, &$left) {
+    [$x, $y] = $cell;
+    $map_local = $map;
+    
+    // assume the area was in fact infinite, abort
+    if($left == 0) {
+        return false;
+    }
+    
+    if($map_local[$x-1][$y] == ".") {
+        $map_local[$x-1][$y] = "+";
+        $left--;
+        fill_closeby($map_local, [$x-1, $y], $left);
+    }
+    if($left == 0) {
+        return false;
+    }
+
+    if($map_local[$x+1][$y] == ".") {
+        $map_local[$x+1][$y] = "+";
+        $left--;
+        fill_closeby($map_local, [$x+1, $y], $left);
+    }
+    if($left == 0) {
+        return false;
+    }
+    
+    if($map_local[$x][$y-1] == ".") {
+        $map_local[$x][$y-1] = "+";
+        $left--;
+        fill_closeby($map_local, [$x, $y-1], $left);
+    }
+    if($left == 0) {
+        return false;
+    }
+
+    if($map_local[$x][$y+1] == ".") {
+        $map_local[$x][$y+1] = "+";
+        $left--;
+        fill_closeby($map_local, [$x, $y+1], $left);
+    }
+    if($left == 0) {
+        return false;
+    }
+    
+    // a small area was filled in
+    $map = $map_local;
+    return true;
+}
+
+function fill_surrounded(&$map, $cell) {
+    [$x, $y] = $cell;
+    $map_local = $map;
+    
+    // if something has just now become surrounded
+    // 1: there will be separate unfilled areas
+    // 2: at least 1 area can be easily filled
+    
     // main idea: if something is surrounded,
     // it will be on the edge of this little square
     // turn the little square into something linear
     // walking around the middle of the square
     // count how many times we change between empty and not
-    $linear_top = $square[0];
-    $linear_right = $square[1][2];
-    $linear_bottom = array_reverse($square[2]);
-    $linear_left = $square[1][0];
-    $linear = array_merge($linear_top, [$linear_right],
-        $linear_bottom, [$linear_left]);
-    
-    // important: was the bone here?
-    $linear_flat = array_merge(...$square);
-    $bone_found = array_search("#", $linear_flat);
-    $bone_detected = is_int($bone_found);
+    $linear = [
+        $map[$x-1][$y-1],
+        $map[$x  ][$y-1],
+        $map[$x+1][$y-1],
+        $map[$x+1][$y  ],
+        $map[$x+1][$y+1],
+        $map[$x  ][$y+1],
+        $map[$x-1][$y+1],
+        $map[$x-1][$y  ]
+    ];
     
     $changes = 0;
-    foreach ($linear as $i => $cell) {
+    foreach ($linear as $i => $cell_val) {
         if(0 < $i) {
-            if($cell != $prev) {
+            if($cell_val != $prev) {
                 $changes++;
             }
         }
-        $prev = $cell;
+        $prev = $cell_val;
     }
     $surrounded = (3 <= $changes);
     
-    return [$surrounded, $bone_detected];
+    if(!$surrounded) {
+        return false;
+    }
+    
+    // assume any surrounded areas can be filled in at most 5 steps
+    $something_was_filled = false;
+    for($i=$x-1;$i<=$x+1;$i++) {
+        for($j=$y-1;$j<=$y+1;$j++) {
+            $left = 5;
+            $filled = fill_closeby($map, [$i, $j], $left);
+            if($left < 5) {
+                $something_was_filled = true;
+            }
+        }
+    }
+    
+    return $something_was_filled;
 }
 
-function find_empty_bits($map, $here) {
-    [$x, $y] = $here;
+function bones_surrounded($map) {
+    global $all_the_bones;
     
-    $empty_right = true;
-    $i = $x + 1;
-    while (isset($map[$i][$y])) {
-        if($map[$i][$y] != ".") {
-            $empty_right = false;
-            break;
+    foreach ($all_the_bones as $cell) {
+        if($map[$cell[0]-1][$cell[1]] == "."
+        || $map[$cell[0]+1][$cell[1]] == "."
+        || $map[$cell[0]][$cell[1]-1] == "."
+        || $map[$cell[0]][$cell[1]+1] == ".") {
+            return false;
         }
-        $i++;
     }
     
-    $empty_left = true;
-    $i = $x - 1;
-    while (isset($map[$i][$y])) {
-        if($map[$i][$y] != ".") {
-            $empty_left = false;
-            break;
-        }
-        $i--;
-    }
-    
-    $empty_down = true;
-    $j = $y + 1;
-    while(isset($map[$x][$j])) {
-        if($map[$x][$j] != ".") {
-            $empty_down = false;
-            break;
-        }
-        $j++;
-    }
-    
-    $empty_up = true;
-    $j = $y - 1;
-    while(isset($map[$x][$j])) {
-        if($map[$x][$j] != ".") {
-            $empty_up = false;
-            break;
-        }
-        $j--;
-    }
-    
-    return [$empty_right, $empty_left, $empty_down, $empty_up];
+    return true;
 }
 
 function walk_map($data, $part) {
-    global $dir;
+    global $dir_small, $dir_large;
+    if($part == 3) {
+        $dir = $dir_large;
+    } else {
+        $dir = $dir_small;
+    }
+    $dir_size = sizeof($dir);
 
     // find beginning and bone
     for($i=0;$i<sizeof($data);$i++) {
@@ -156,19 +206,20 @@ function walk_map($data, $part) {
     $i_am_here = $at;
     $dir_no = 0;
     $steps = 0;
-    $bone_detected = false; // important for surround purposes
     while(true) {
         $this_dir = $dir[$dir_no];
-        $new_i_am_here = [$i_am_here[0] + $this_dir[0], $i_am_here[1] + $this_dir[1]];
+        $new_i_am_here = [$i_am_here[0] + $this_dir[0],
+            $i_am_here[1] + $this_dir[1]];
         
         if($data[$new_i_am_here[0]][$new_i_am_here[1]] != "+") {
-            if($part == 2 && $data[$new_i_am_here[0]][$new_i_am_here[1]] == "#") {
+            if($part == 2
+            && $data[$new_i_am_here[0]][$new_i_am_here[1]] == "#") {
                 // don't walk over bones anymore
-                $dir_no = ($dir_no + 1) % 4;
+                $dir_no = ($dir_no + 1) % $dir_size;
                 continue;
             }
             
-            // update my path
+            // update my path, where i was
             $data[$i_am_here[0]][$i_am_here[1]] = "+";
             
             // update rest of me
@@ -182,74 +233,48 @@ function walk_map($data, $part) {
                 }
             }
             
+            // stopping condition
+            if($part == 2) {
+                if(bones_surrounded($data)) {
+                    return $steps - 1; // ahem
+                }
+            }
+            
             // update me
             $data[$i_am_here[0]][$i_am_here[1]] = "@";
 
             // update next to path
             if($part == 2) {
-                // check whether area is surrounded
-                // this happens when in my little 3x3 area
-                // with new me in the middle
-                // there are now 2 empty parts with no connection
-                // assumption: we are away from the edge of the map
-                $my_little_square = array_slice($data, $i_am_here[0] - 1, 3);
-                foreach ($my_little_square as $i => $col) {
-                    $my_little_square[$i] = array_slice($col, $i_am_here[1] - 1, 3);
-                }
-                [$surrounded, $bone_detected_here] = detect_surrounded($my_little_square);
-                // we are surrounded!
-                // but remember to check that this isn't the first encounter with the bone
-                
-                // hack
-                if(3400 < $steps) {
-                    $bone_detected = true;
-                }
-                
-                if($surrounded && !($bone_detected_here && !$bone_detected)) {
-                    // to one side there will be completely empty, to the other not
-                    // the surrounded bit will not be diagonal to the middle
-                    $empty_or_not = find_empty_bits($data, $i_am_here);
-                    [$empty_right, $empty_left, $empty_down, $empty_up] = $empty_or_not;
-if(3424 == $steps) {
-    $empty_right = true; // hack
-}
-                    if($data[$i_am_here[0]+1][$i_am_here[1]] == "." && $empty_left && !$empty_right) {
-                        // fill up to the right
-                        $data[$i_am_here[0]+1][$i_am_here[1]] = "+";
-                    }
-                    if($data[$i_am_here[0]-1][$i_am_here[1]] == "." && $empty_right && !$empty_left) {
-                        // fill up to the left
-                        $data[$i_am_here[0]-1][$i_am_here[1]] = "+";
-                    }
-                    if($data[$i_am_here[0]][$i_am_here[1]+1] == "." && $empty_up && !$empty_down) {
-                        // fill up downwards
-                        $data[$i_am_here[0]][$i_am_here[1]+1] = "+";
-                    }
-                    if($data[$i_am_here[0]][$i_am_here[1]-1] == "." && $empty_down && !$empty_up) {
-                        // fill up downwards
-                        $data[$i_am_here[0]][$i_am_here[1]-1] = "+";
-                    }
-                    if($bone_detected_here) {
-                        $bone_detected = true;
-                    }
-                }
-            } // update next to path
+                fill_surrounded($data, $i_am_here);
+            }
             
             // stopping condition
             if($part == 2) {
-                if($data[$bone[0]-1][$bone[1]] == "+"
-                && $data[$bone[0]+1][$bone[1]] == "+"
-                && $data[$bone[0]][$bone[1]-1] == "+"
-                && $data[$bone[0]][$bone[1]+1] == "+") {
-                    return $steps - 1; // ahem
+                if(bones_surrounded($data)) {
+                    return $steps;
                 }
             }
             
+//if($part == 2) { print_map($data); usleep(500000); }
         }
-        $dir_no = ($dir_no + 1) % 4;
+        $dir_no = ($dir_no + 1) % $dir_size;
     }
     
     return $steps;
+}
+
+function find_all_bones($map) {
+    $bones = [];
+    
+    foreach ($map as $i => $col) {
+        foreach ($col as $j => $cell) {
+            if($map[$i][$j] == "#") {
+                $bones[] = [$i, $j];
+            }
+        }
+    }
+    
+    return $bones;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -269,6 +294,8 @@ printf("Result 1: %d\n", $steps);
 $file2 = './everybody_codes_e3_q' . $quest . '_p2.txt';
 $input = file_get_contents($file2, true);
 $data = get_input($input);
+
+$all_the_bones = find_all_bones($data);
 
 $steps = walk_map($data, 2);
 
