@@ -25,7 +25,7 @@ function get_input($input) {
 		}
 	}
 	// add extra space before and after - hack
-	for($i=0;$i<$extra_space;$i++) {
+	for($i=1;$i<=$extra_space;$i++) {
     	$data[] = array_fill(0, sizeof($data[0]), ".");
     	$data[-$i] = array_fill(0, sizeof($data[0]), ".");
 	}
@@ -67,7 +67,8 @@ function fill_closeby(&$map, $cell, &$left) {
         return false;
     }
     
-    if($map_local[$x-1][$y] == ".") {
+    // going left
+    if(isset($map_local[$x-1][$y]) && $map_local[$x-1][$y] == ".") {
         $map_local[$x-1][$y] = "+";
         $left--;
         fill_closeby($map_local, [$x-1, $y], $left);
@@ -76,7 +77,8 @@ function fill_closeby(&$map, $cell, &$left) {
         return false;
     }
 
-    if($map_local[$x+1][$y] == ".") {
+    // going right
+    if(isset($map_local[$x+1][$y]) && $map_local[$x+1][$y] == ".") {
         $map_local[$x+1][$y] = "+";
         $left--;
         fill_closeby($map_local, [$x+1, $y], $left);
@@ -85,7 +87,8 @@ function fill_closeby(&$map, $cell, &$left) {
         return false;
     }
     
-    if($map_local[$x][$y-1] == ".") {
+    // going up
+    if(isset($map_local[$x][$y-1]) && $map_local[$x][$y-1] == ".") {
         $map_local[$x][$y-1] = "+";
         $left--;
         fill_closeby($map_local, [$x, $y-1], $left);
@@ -94,7 +97,8 @@ function fill_closeby(&$map, $cell, &$left) {
         return false;
     }
 
-    if($map_local[$x][$y+1] == ".") {
+    // going down
+    if(isset($map_local[$x][$y+1]) && $map_local[$x][$y+1] == ".") {
         $map_local[$x][$y+1] = "+";
         $left--;
         fill_closeby($map_local, [$x, $y+1], $left);
@@ -103,7 +107,7 @@ function fill_closeby(&$map, $cell, &$left) {
         return false;
     }
     
-    // a small area was filled in
+    // a small area might have been filled in
     $map = $map_local;
     return true;
 }
@@ -147,14 +151,21 @@ function fill_surrounded(&$map, $cell) {
         return false;
     }
     
-    // assume any surrounded areas can be filled in at most 5 steps
+    // assume any surrounded areas can be filled in at most 100 steps
+    $at_most_steps = 100;
     $something_was_filled = false;
     for($i=$x-1;$i<=$x+1;$i++) {
         for($j=$y-1;$j<=$y+1;$j++) {
-            $left = 5;
-            $filled = fill_closeby($map, [$i, $j], $left);
-            if($left < 5) {
-                $something_was_filled = true;
+            if($map[$i][$j] == ".") {
+                $map[$i][$j] = "+";
+                $left = $at_most_steps - 1;
+                fill_closeby($map, [$i, $j], $left);
+                if($left != 0 && $left < $at_most_steps) {
+                    $something_was_filled = true;
+                } else {
+                    // infinite fill, abort
+                    $map[$i][$j] = ".";
+                }
             }
         }
     }
@@ -164,13 +175,19 @@ function fill_surrounded(&$map, $cell) {
 
 function bones_surrounded($map) {
     global $all_the_bones;
+    if(sizeof($all_the_bones) == 0) {
+        return true;
+    }
     
-    foreach ($all_the_bones as $cell) {
+    foreach ($all_the_bones as $i => $cell) {
         if($map[$cell[0]-1][$cell[1]] == "."
         || $map[$cell[0]+1][$cell[1]] == "."
         || $map[$cell[0]][$cell[1]-1] == "."
         || $map[$cell[0]][$cell[1]+1] == ".") {
             return false;
+        } else {
+            // delete the bone the 1st time it is surrounded
+            unset($all_the_bones[$i]);
         }
     }
     
@@ -179,6 +196,7 @@ function bones_surrounded($map) {
 
 function walk_map($data, $part) {
     global $dir_small, $dir_large;
+    
     if($part == 3) {
         $dir = $dir_large;
     } else {
@@ -194,13 +212,6 @@ function walk_map($data, $part) {
             break;
         }
     }
-    for($i=0;$i<sizeof($data);$i++) {
-        $j = array_search("#", $data[$i]);
-        if($j !== false) {
-            $bone = [$i, $j];
-            break;
-        }
-    }
     
     // up, right, down, left
     $i_am_here = $at;
@@ -212,7 +223,7 @@ function walk_map($data, $part) {
             $i_am_here[1] + $this_dir[1]];
         
         if($data[$new_i_am_here[0]][$new_i_am_here[1]] != "+") {
-            if($part == 2
+            if($part != 1
             && $data[$new_i_am_here[0]][$new_i_am_here[1]] == "#") {
                 // don't walk over bones anymore
                 $dir_no = ($dir_no + 1) % $dir_size;
@@ -234,7 +245,7 @@ function walk_map($data, $part) {
             }
             
             // stopping condition
-            if($part == 2) {
+            if($part != 1) {
                 if(bones_surrounded($data)) {
                     return $steps - 1; // ahem
                 }
@@ -244,18 +255,16 @@ function walk_map($data, $part) {
             $data[$i_am_here[0]][$i_am_here[1]] = "@";
 
             // update next to path
-            if($part == 2) {
+            if($part != 1) {
                 fill_surrounded($data, $i_am_here);
             }
             
             // stopping condition
-            if($part == 2) {
+            if($part != 1) {
                 if(bones_surrounded($data)) {
                     return $steps;
                 }
             }
-            
-//if($part == 2) { print_map($data); usleep(500000); }
         }
         $dir_no = ($dir_no + 1) % $dir_size;
     }
@@ -279,6 +288,8 @@ function find_all_bones($map) {
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
+
+$steps = 0;
 
 $file1 = './everybody_codes_e3_q' . $quest . '_p1.txt';
 $input = file_get_contents($file1, true);
@@ -304,9 +315,33 @@ printf("Result 2: %d\n", $steps);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e3_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e3_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$all_the_bones = find_all_bones($data);
+
+// find any area, that begin as surrounded
+// assume any surrounded areas can be filled in at most 100 steps
+$at_most_steps = 100;
+for($i=min(array_keys($data));$i<=max(array_keys($data));$i++) {
+    for($j=min(array_keys($data[0]));$j<=max(array_keys($data[0]));$j++) {
+        if($data[$i][$j] == ".") {
+            $data[$i][$j] = "+";
+            $left = $at_most_steps - 1;
+            fill_closeby($data, [$i, $j], $left);
+            if($left != 0 && $left < $at_most_steps) {
+                // do nothing
+            } else {
+                // infinite fill, abort
+                $data[$i][$j] = ".";
+            }
+        }
+    }
+}
+
+$steps = walk_map($data, 3);
+
+printf("Result 3: %d\n", $steps);
 
 ?>
