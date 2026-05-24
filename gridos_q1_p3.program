@@ -1,0 +1,61 @@
+3 heads, 2 for reading input, 1 for producing output;
+	the 2 readers always stay together
+START: move writer head up above the input line,
+	move 2nd reader down to 2nd input line, go to READ state
+READ: if read A or B, delete it, move right
+READ: read A_, AA, etc., produce 0-12 P's; read nothing, go to STOP
+READ: read C_, write P, move to state TWO
+TWO: write P, move to state ONE
+ONE: write P, move to state READ, delete input, move right
+etc.
+
+===========================================================================
+
+HEADS AAA
+
+START *** READ *** SDU
+
+READ A_* READ __* RRS
+READ AA* ONE **P SSR
+READ AB* TWO **P SSR
+READ AC* FOUR **P SSR
+READ AD* SIX **P SSR
+
+READ B_* READ __P RRR
+READ BA* TWO **P SSR
+READ BB* THREE **P SSR
+READ BC* FIVE **P SSR
+READ BD* SEVEN **P SSR
+
+READ C_* TWO __P SSR
+READ CA* FOUR **P SSR
+READ CB* FIVE **P SSR
+READ CC* SEVEN **P SSR
+READ CD* NINE **P SSR
+
+READ D_* FOUR __P SSR
+READ DA* SIX **P SSR
+READ DB* SEVEN **P SSR
+READ DC* NINE **P SSR
+READ DD* ELEVEN **P SSR
+
+ELEVEN *** TEN **P SSR
+TEN *** NINE **P SSR
+NINE *** EIGHT **P SSR
+EIGHT *** SEVEN **P SSR
+SEVEN *** SIX **P SSR
+SIX *** FIVE **P SSR
+FIVE *** FOUR **P SSR
+FOUR *** THREE **P SSR
+THREE *** TWO **P SSR
+TWO *** ONE **P SSR
+ONE *** READ __P RRR
+
+READ _** STOP *** SSS
+
+===========================================================================
+
+Heads:		3 
+States:		1308 
+Rules:		2338 
+Steps:		15831 
