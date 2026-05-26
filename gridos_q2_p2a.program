@@ -1,0 +1,26 @@
+HEADS AA // read 2 adjacent places, might write
+
+START ** READL ** SR // spread heads, prepare to move right
+
+READL AA READL @* RR // read pair, write power symbol
+READL BB READL @* RR
+
+READL AB READL _* RR // read non-pair, delete
+READL BA READL _* RR
+
+READL !_ READR _* DD // at end of odd line, go down, prepare to move left
+READR !_ READR ** LL
+READR __ STOP  ** SS
+
+READR AA READR *@ LL // read pair, write power symbol
+READR BB READR *@ LL
+
+READR AB READR *_ LL // read non-pair, delete
+READR BA READR *_ LL
+
+READR _! READL *_ DD // at end of even line, go down, prepare to move right
+READL _! READL ** RR
+READL __ STOP  ** SS
+
+// heads	states	rules	steps
+// 2		400		1204	6792
