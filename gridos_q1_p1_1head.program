@@ -1,0 +1,18 @@
+HEADS A
+
+START * READD * S
+READD A READD _ R		// READD: read, if P's needed, write them down
+READU A READU _ R		// READU: same, but up
+READD B READD P R
+READU B READU P R
+READD C TWOD P D
+READU C TWOU P U
+TWOD * ONED P R			// TWOD: writing down
+TWOU * ONEU P R			// TWOU: writing up
+ONED * READU P U
+ONEU * READD P D
+READD _ STOP * S
+READU _ STOP * S
+
+// heads	states	rules	steps
+// 1		774		1106	5020

@@ -1,0 +1,42 @@
+HEADS A
+
+START * READ1 * S
+
+READ1 _ STOP * S			// READ1: reading character in 1st line
+
+// 1st character
+READ1 A READ2 E D			// E: will later be empty
+READ1 B READ2 F D			// F: will later be full (with P)
+READ1 C WRITE_2PU F U
+READ1 D WRITE_4PU F U
+WRITE_4PU * WRITE_3PU P U	// WRITE_4PU: write 4P upwards
+WRITE_3PU * WRITE_2PU P U
+WRITE_2PU * WRITE_1PU P U
+WRITE_1PU * DOWN P D
+DOWN P DOWN * D				// go down until 2nd line
+DOWN E READ2 * D
+DOWN F READ2 * D
+
+// 2nd character
+
+READ2 _ UP * U
+READ2 A WRITE_1PD P D		// READ2: reading character in 2nd line
+READ2 B WRITE_2PD P D
+READ2 C WRITE_4PD P D
+READ2 D WRITE_6PD P D
+WRITE_6PD * WRITE_5PD P D
+WRITE_5PD * WRITE_4PD P D
+WRITE_4PD * WRITE_3PD P D
+WRITE_3PD * WRITE_2PD P D
+WRITE_2PD * WRITE_1PD P D
+WRITE_1PD * UP P U
+UP P UP * U
+
+// 1st character finished
+
+UP E READ1 _ R
+UP F READ1 P R
+
+// heads	states	rules	steps
+// 1		1516	2385	31008
+
