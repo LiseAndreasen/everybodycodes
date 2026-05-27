@@ -1,0 +1,41 @@
+2 heads, 1 for reading input, 1 for producing output
+START: move writer head down below the input line, go to READ state
+READ: if read A or B, delete it, move right
+READ: read A, B or C, produce 0, 1 or 3 P's; read nothing, go to STOP
+READ: read C, write P, move to state TWO
+TWO: write P, move to state ONE
+ONE: write P, move to state READ, delete input, move right
+etc.
+
+Modified so that state is in front of an extra head 1
+
+===========================================================================
+
+HEADS AAA
+
+START A** START *** USD
+START B** START *** USD
+START C** START *** USD
+START D** START *** USD
+
+START _!* START R** SSS
+
+START RA* START R_* SRS
+
+START RB* START R_P SRR
+
+START RC* START 2*P SSR
+START RD* START 4*P SSR
+START 4** START 3*P SSR
+START 3** START 2*P SSR
+START 2** START 1*P SSR
+START 1** START R_P SRR
+
+START R_* STOP _** SSS
+
+===========================================================================
+
+Heads:		3
+States:		200 
+Rules:		1048 
+Steps:		7811 
