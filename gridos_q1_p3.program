@@ -1,15 +1,150 @@
-3 heads, 2 for reading input, 1 for producing output;
-	the 2 readers always stay together
-START: move writer head up above the input line,
-	move 2nd reader down to 2nd input line, go to READ state
-READ: if read A or B, delete it, move right
-READ: read A_, AA, etc., produce 0-12 P's; read nothing, go to STOP
-READ: read C_, write P, move to state TWO
-TWO: write P, move to state ONE
-ONE: write P, move to state READ, delete input, move right
-etc.
+//=========================================================================
 
-===========================================================================
+//	2 states
+//	modified part 2 program
+//	heads	states	rules	steps
+//	4		200		2438	15931
+
+HEADS AAAA
+
+START A*** START **** LSDU
+START B*** START **** LSDU
+START C*** START **** LSDU
+START D*** START **** LSDU
+START _*** START R*** SSSS
+
+START RA_* START R__* SRRS
+START RAA* START 1**P SSSR
+START RAB* START 2**P SSSR
+START RAC* START 4**P SSSR
+START RAD* START 6**P SSSR
+
+START RB_* START R__P SRRR
+START RBA* START 2**P SSSR
+START RBB* START 3**P SSSR
+START RBC* START 5**P SSSR
+START RBD* START 7**P SSSR
+
+START RC_* START 2__P SSSR
+START RCA* START 4**P SSSR
+START RCB* START 5**P SSSR
+START RCC* START 7**P SSSR
+START RCD* START 9**P SSSR
+
+START RD_* START 4__P SSSR
+START RDA* START 6**P SSSR
+START RDB* START 7**P SSSR
+START RDC* START 9**P SSSR
+START RDD* START L**P SSSR
+
+START L*** START T**P SSSR
+START T*** START 9**P SSSR
+START 9*** START 8**P SSSR
+START 8*** START 7**P SSSR
+START 7*** START 6**P SSSR
+START 6*** START 5**P SSSR
+START 5*** START 4**P SSSR
+START 4*** START 3**P SSSR
+START 3*** START 2**P SSSR
+START 2*** START 1**P SSSR
+START 1*** START R__P SRRR
+
+START R_** STOP _*** SSSS
+
+//=========================================================================
+
+// 1 head
+// heads	states	rules	steps
+// 1		1516	2385	31008
+
+HEADS A
+
+START * READ1 * S
+
+READ1 _ STOP * S			// READ1: reading character in 1st line
+
+// 1st character
+READ1 A READ2 E D			// E: will later be empty
+READ1 B READ2 F D			// F: will later be full (with P)
+READ1 C WRITE_2PU F U
+READ1 D WRITE_4PU F U
+WRITE_4PU * WRITE_3PU P U	// WRITE_4PU: write 4P upwards
+WRITE_3PU * WRITE_2PU P U
+WRITE_2PU * WRITE_1PU P U
+WRITE_1PU * DOWN P D
+DOWN P DOWN * D				// go down until 2nd line
+DOWN E READ2 * D
+DOWN F READ2 * D
+
+// 2nd character
+
+READ2 _ UP * U
+READ2 A WRITE_1PD P D		// READ2: reading character in 2nd line
+READ2 B WRITE_2PD P D
+READ2 C WRITE_4PD P D
+READ2 D WRITE_6PD P D
+WRITE_6PD * WRITE_5PD P D
+WRITE_5PD * WRITE_4PD P D
+WRITE_4PD * WRITE_3PD P D
+WRITE_3PD * WRITE_2PD P D
+WRITE_2PD * WRITE_1PD P D
+WRITE_1PD * UP P U
+UP P UP * U
+
+// 1st character finished
+
+UP E READ1 _ R
+UP F READ1 P R
+
+//=========================================================================
+
+//	10 heads
+//	heads	states	rules	steps
+//	10		870		1900	3580
+
+HEADS AAAAAAAAAA // 10 heads, 2 for reading input, all 10 for producing output
+
+START  ********** START2 ********** SDSDSDSDSD // spread heads out, go to READ state
+START2 ********** START3 ********** SSUDUDUDUD
+START3 ********** START4 ********** SSSSUDUDUD
+START4 ********** START5 ********** SSSSSSUDUD
+START5 ********** READ   ********** SSSSSSSSUD
+
+READ A_******** READ _********* RRRRRRRRRR // read state, write P's // 0=0+0
+READ AA******** READ PP******** RRRRRRRRRR // read state, write P's // 2=0+0+2
+READ AB******** READ PPP******* RRRRRRRRRR // read state, write P's // 3=0+1+2
+READ AC******** READ PPPPP***** RRRRRRRRRR // read state, write P's // 5=0+3+2
+READ AD******** READ PPPPPPP*** RRRRRRRRRR // read state, write P's // 7=0+5+2
+
+READ B_******** READ P********* RRRRRRRRRR // read state, write P's // 1=1+0
+READ BA******** READ PPP******* RRRRRRRRRR // read state, write P's // 3=1+0+2
+READ BB******** READ PPPP****** RRRRRRRRRR // read state, write P's // 4=1+1+2
+READ BC******** READ PPPPPP**** RRRRRRRRRR // read state, write P's // 6=1+3+2
+READ BD******** READ PPPPPPPP** RRRRRRRRRR // read state, write P's // 8=1+5+2
+
+READ C_******** READ PPP******* RRRRRRRRRR // read state, write P's // 3=3+0
+READ CA******** READ PPPPP***** RRRRRRRRRR // read state, write P's // 5=3+0+2
+READ CB******** READ PPPPPP**** RRRRRRRRRR // read state, write P's // 6=3+1+2
+READ CC******** READ PPPPPPPP** RRRRRRRRRR // read state, write P's // 8=3+3+2
+READ CD******** READ PPPPPPPPPP RRRRRRRRRR // read state, write P's // 10=3+5+2
+
+READ D_******** READ PPPPP***** RRRRRRRRRR // read state, write P's // 5=5+0
+READ DA******** READ PPPPPPP*** RRRRRRRRRR // read state, write P's // 7=5+0+2
+READ DB******** READ PPPPPPPP** RRRRRRRRRR // read state, write P's // 8=5+1+2
+READ DC******** READ PPPPPPPPPP RRRRRRRRRR // read state, write P's // 10=5+3+2
+READ DD******** REA2 PPPPPPPPPP RRRRRRRRUD // read state, write P's // 12=5+5+2
+
+REA2 ********** REA3 ********PP SSSSSSSSRR
+REA3 ********** READ ********** SSSSSSSSDU
+
+READ _********* STOP ********** SSSSSSSSSS  // empty, stop
+
+//=========================================================================
+
+//	basic
+//	modified part 2 program
+//	heads	states	rules	steps
+//	3		1308	2338	15831
 
 HEADS AAA
 
@@ -52,10 +187,3 @@ TWO *** ONE **P SSR
 ONE *** READ __P RRR
 
 READ _** STOP *** SSS
-
-===========================================================================
-
-Heads:		3 
-States:		1308 
-Rules:		2338 
-Steps:		15831 

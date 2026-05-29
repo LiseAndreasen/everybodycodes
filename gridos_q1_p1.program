@@ -1,31 +1,102 @@
-2 heads, 1 for reading input, 1 for producing output
-START: move writer head down below the input line, go to READ state
-READ: if read A or B, delete it, move right
-READ: read A, B or C, produce 0, 1 or 3 P's; read nothing, go to STOP
-READ: read C, write P, move to state TWO
-TWO: write P, move to state ONE
-ONE: write P, move to state READ, delete input, move right
-etc.
+//=========================================================================
 
-===========================================================================
+//	fewer rules
+//	heads	states	rules	steps
+//	3		200		481		2568
 
-HEADS AA
+HEADS AAA // 3 heads, 1 for reading input, all 3 for producing output
 
-START ** READ ** SD
+START BBB START P** RUD // spread heads out, go to READ state
+START AAA START _** RUD
+START CCC START *** SUD
 
-READ A* READ _* RS
+START A__ START _** RUD  // A, delete it, move all right
+START B__ START P** RRR  // B, replace with P, move all right
+START C__ START PPP RRR  // C, produce 3 P's, move all right
 
-READ B* READ _P RR
+START ___ STOP *** SSS  // empty, stop
 
-READ C* TWO *P SR
+//=========================================================================
+
+// 2 states
+// 2 heads version modified to store state under 3rd head
+// heads	states	rules	steps
+// 3		200		776		5120
+
+
+HEADS AAA
+
+START A** START *** USD
+START B** START *** USD
+START C** START *** USD
+
+START _!* START R** SSS
+
+START RA* START R_* SRS
+
+START RB* START R_P SRR
+
+START RC* START 2*P SSR
+START 2** START 1*P SSR
+START 1** START R_P SRR
+
+START R_* STOP _** SSS
+
+//=========================================================================
+
+// 1 head
+// heads	states	rules	steps
+// 1		774		1106	5020
+
+HEADS A
+
+START * READD * S
+READD A READD _ R		// READD: read, if P's needed, write them down
+READU A READU _ R		// READU: same, but up
+READD B READD P R
+READU B READU P R
+READD C TWOD P D
+READU C TWOU P U
+TWOD * ONED P R			// TWOD: writing down
+TWOU * ONEU P R			// TWOU: writing up
+ONED * READU P U
+ONEU * READD P D
+READD _ STOP * S
+READU _ STOP * S
+
+//=========================================================================
+
+//	3 heads
+//	heads	states	rules	steps
+//	3		300		484		2620
+
+HEADS AAA // 3 heads, 1 for reading input, all 3 for producing output
+
+START *** READ *** SUD // spread heads out, go to READ state
+
+READ A** READ _** RRR  // A, delete it, move all right
+READ B** READ P** RRR  // B, replace with P, move all right
+READ C** READ PPP RRR  // C, produce 3 P's, move all right
+
+READ _** STOP *** SSS  // empty, stop
+
+//=========================================================================
+
+// basic
+// heads	states	rules	steps
+// 2		492		676		5020
+
+HEADS AA				// 2 heads, reading input and producing output
+
+START ** READ ** SD		// move writer head down
+
+READ A* READ _* RS		// read A, delete
+
+READ B* READ _P RR		// read B, delete and write 1 P
+
+READ C* TWO *P SR		// read C, delete, write 3 P's
 TWO ** ONE *P SR
 ONE ** READ _P RR
 
-READ _* STOP ** SS
+READ _* STOP ** SS		// read empty, stop
 
-===========================================================================
-
-Heads:		2 
-States:		492 
-Rules:		676 
-Steps:		5020 
