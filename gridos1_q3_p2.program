@@ -1,0 +1,37 @@
+//=========================================================================
+
+//	basic
+//	heads	states	rules	steps
+//	4		399		1347	8744
+
+HEADS AAAA
+
+// 123
+//  4
+
+START  **** READ **** LSRD		// spread heads
+
+READ _!_* STOP **** SSSS		// very short line
+READ _!!* READ **** RRRR		// beginning of line
+
+READ ~==* READ *~*~ RRRR		// deeper pond
+READ ~=#* READ *~*# RRRR		// not deeper pond
+READ #==* READ *~*# RRRR
+READ #=#* READ *~*# RRRR
+READ !#!* READ ***# RRRR		// not pond
+
+READ !!_* READ2 **** DDDD		// end of line
+
+READ2 _#_* STOP  *_** SSSS		// very short line
+READ2 ___* STOP  **** SSSS
+READ2 !__* READ2 **** LLLL		// beginning of 2nd line
+READ2 !#_* READ2 *_** LLLL
+ 
+READ2 ~~~* READ2 ***~ LLLL		// deeper pond
+READ2 ~~_* READ2 **** LLLL		// not deeper pond
+READ2 #~~* READ2 **** LLLL
+READ2 #~_* READ2 **** LLLL
+READ2 !#!* READ2 *_** LLLL		// not pond
+
+READ2 _#!* STOP  *_** SSSS		// end of 2nd line
+READ2 _~** STOP  **** SSSS 

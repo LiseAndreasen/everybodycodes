@@ -1,0 +1,83 @@
+//=========================================================================
+
+//	basic
+//	heads	states	rules	steps
+//	5		573		2610	56853
+
+HEADS AAAAB							// last head to keep track of last line
+
+// 123    5
+//  4
+
+START ***** READ ***** LSRDR		// spread heads
+
+READ _!_** STOP ***** SSSSS			// very short line
+READ _!!** READ ***** RRRRS			// beginning of line
+
+READ ~==** READ *~*~D RRRRS			// deeper pond
+READ ~=#** READ *~*#* RRRRS			// not deeper pond
+READ #==** READ *~*#* RRRRS
+READ #=#** READ *~*#* RRRRS
+READ !#!** READ ***#* RRRRS			// not pond
+
+READ !!_*D READ2 ****_ DDDDS		// end of line
+READ !!_*_ READ4 ***** DDDDS		// next line is last line
+
+READ2 _#_** STOP  *_*** SSSSS		// very short line
+READ2 ___** STOP  ***** SSSSS
+READ2 !__** READ2 ***** LLLLS		// beginning of even line
+READ2 !#_** READ2 ***** LLLLS
+ 
+READ2 ~~~** READ2 ***~D LLLLS		// deeper pond
+READ2 ~~#** READ2 **_#* LLLLS		// not deeper pond
+READ2 #~~** READ2 ***#* LLLLS
+READ2 #~#** READ2 **_#* LLLLS
+READ2 !##** READ2 **_#* LLLLS		// not pond
+READ2 !#~** READ2 ***#* LLLLS
+
+READ2 _##*D READ3 *__*_ DDDDS		// end of even line
+READ2 _#~*D READ3 *_**_ DDDDS
+READ2 _~**D READ3 ****_ DDDDS
+READ2 _##*_ READ5 *__** DDDDS		// next line is last line
+READ2 _#~*_ READ5 *_*** DDDDS
+READ2 _~**_ READ5 ***** DDDDS
+
+READ3 _#_** STOP  *_*** SSSSS		// very short line
+READ3 ___** STOP  ***** SSSSS
+READ3 __!** READ3 ***** RRRRS		// beginning of odd line
+READ3 _#!** READ3 ***** RRRRS
+
+READ3 ~~~** READ3 ***~D RRRRS		// deeper pond
+READ3 ~~#** READ3 ***#* RRRRS		// not deeper pond
+READ3 #~~** READ3 _**#* RRRRS
+READ3 #~#** READ3 _**#* RRRRS
+READ3 ##!** READ3 _**#* RRRRS		// not pond
+READ3 ~#!** READ3 ***#* RRRRS
+
+READ3 ##_*D READ2 __**_ DDDDS		// end of odd line
+READ3 ~#_*D READ2 *_**_ DDDDS
+READ3 *~_*D READ2 ****_ DDDDS
+READ3 ##_*_ READ4 __*** DDDDS		// next line is last line
+READ3 ~#_*_ READ4 *_*** DDDDS
+READ3 *~_*_ READ4 ***** DDDDS
+
+READ4 ___** STOP  ***** SSSSS
+READ4 #__** READ4 ***** LLLLS		// last line, even
+READ4 _#_** STOP  *_*** SSSSS
+READ4 ##_** READ4 ***** LLLLS
+READ4 ###** READ4 **_** LLLLS
+READ4 _##** STOP  ___** SSSSS
+
+READ5 ___** STOP  ***** SSSSS
+READ5 __#** READ5 ***** RRRRS		// last line, odd
+READ5 _#_** STOP  *_*** SSSSS
+READ5 _##** READ5 ***** RRRRS
+READ5 ###** READ5 _**** RRRRS
+READ5 ##_** STOP  __*** SSSSS
+
+//=========================================================================
+
+//	heads	states	rules	steps
+//	4		496		2314	112036
+
+//	with 4 heads, code not preserved, similar to 5 head version
