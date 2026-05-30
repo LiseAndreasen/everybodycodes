@@ -1,3 +1,9 @@
+//=========================================================================
+
+//	basic
+//	heads	states	rules	steps
+//	5		485		2026	6795
+
 HEADS AAAAA
 
 // 5
@@ -60,6 +66,3 @@ READL _B*B* READR *@*** DDDDS
 
 READR __*** STOP ***** SSSSS
 READL __*** STOP ***** SSSSS
-
-// heads	states	rules	steps
-// 5		485		2026	6795

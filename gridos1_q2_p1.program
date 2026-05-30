@@ -1,3 +1,9 @@
+//=========================================================================
+
+//	basic
+//	heads	states	rules	steps
+//	2		300		578		2527
+
 HEADS AA // read 2 adjacent places, might write
 
 START ** READ ** SR // spread heads
@@ -9,6 +15,3 @@ READ AB READ _* RR // read non-pair, delete
 READ BA READ _* RR
 
 READ *_ STOP _* SS
-
-// heads	states	rules	steps
-// 2		300		578		2527
