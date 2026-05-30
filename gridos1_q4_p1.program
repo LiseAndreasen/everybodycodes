@@ -1,0 +1,20 @@
+//=========================================================================
+
+//	basic / 1 head
+//	heads	states	rules	steps
+//	1		700		941		14773
+
+HEADS A
+
+START	#	RIGHT1	*	R
+RIGHT1	|	DOWN	*	L
+DOWN	*	START	*	D
+
+RIGHT1	=	RIGHT2	*	R
+RIGHT2	=	RIGHT2	*	R
+RIGHT2	|	BAM		_	L
+BAM		=	LEFT	|	L
+LEFT	=	LEFT	*	L
+LEFT	#	DOWN	*	S
+
+START	_	STOP	*	S

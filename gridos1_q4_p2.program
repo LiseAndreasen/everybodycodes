@@ -1,0 +1,47 @@
+//=========================================================================
+
+//	basic
+//	heads	states	rules	steps
+//	3		1100	2890	87140
+
+HEADS AAA		// read head, and above and to the left counting heads
+
+START	***	READR	***	SUL		// spread heads
+
+READR	#**	READR	*@@	RRS		// reads each line, going right and left
+
+READR	=-*	READR	***	RRS
+READR	=_*	READR	*-*	RRS
+READR	=1*	READR	***	RRS
+
+READR	|_*	READL	*1*	LLS		// note above the shortest nail
+READR	|-*	READL	*1*	LLS
+READR	|1*	READL	***	LLS
+READL	=**	READL	***	LLS
+READL	#**	READR	***	DSD		// read next line
+READR	_**	WRITEU	***	USU		// all lines read
+
+WRITEU	#**	WRITEU	***	USU		// prepare to change nails
+WRITEU	@**	WRITER	_**	DSD
+WRITER	***	WRITED	***	RRS
+WRITED	*-@	WRITED	=**	DSD		// clean up top line
+WRITED	*1@	WRITED	|**	DSD
+
+WRITED	*-_	WRITEU	***	USU		// write shaft
+WRITEU	=-*	WRITEU	***	USU
+WRITEU	-**	WRITER	_**	DSD
+
+WRITED	*1_	WRITEU	***	USU		// write head
+WRITEU	|1*	WRITEU	***	USU
+WRITEU	1**	WRITER2	_**	RRS
+
+WRITER2	*_*	DELETE	***	SSD		// clean up too much nail
+WRITER2	*!*	WRITED2	***	DSD
+
+WRITED2	*!@	WRITED2	_**	DSD
+WRITED2	_!_	WRITEU2	***	USU
+WRITEU2	_!@	WRITEU2	*** USU
+WRITEU2	!!_	WRITER2	_**	RRS
+
+DELETE	**@	DELETE	**_	SSD		// clean up left column
+DELETE	**_	STOP	***	SSS
