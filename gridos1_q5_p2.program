@@ -1,0 +1,36 @@
+//=========================================================================
+
+//	basic
+//	heads	states	rules	steps
+//	2		1300	2200	6494
+
+HEADS	AA			// write, look at barrels
+
+START		**	START2		**	SD
+START2		**	UPRIGHT		+*	RR
+
+UPRIGHT		*@	UPRIGHT		+*	RR
+UPRIGHT		*+	UPRIGHT		+*	RR
+UPRIGHT		*.	DOWNDOWN	+*	DS
+DOWNDOWN	**	DOWNRIGHT	+*	DS
+
+DOWNRIGHT	*@	DOWNRIGHT	+*	RR
+DOWNRIGHT	*+	DOWNRIGHT	+*	RR
+DOWNRIGHT	*.	UPUP		+*	US
+UPUP		**	UPRIGHT		+*	US
+
+DOWNRIGHT	*_	TURN1		**	LL
+TURN1		**	TURN2		**	SL
+TURN2		**	RIGHTDOWN	**	SD
+
+RIGHTDOWN	*@	RIGHTDOWN	+*	DD
+RIGHTDOWN	*+	RIGHTDOWN	+*	DD
+RIGHTDOWN	*.	LEFTLEFT	+*	LS
+LEFTLEFT	**	LEFTDOWN	+*	LS
+
+LEFTDOWN	*@	LEFTDOWN	+*	DD
+LEFTDOWN	*+	LEFTDOWN	+*	DD
+LEFTDOWN	*.	RIGHTRIGHT	+*	RS
+RIGHTRIGHT	**	RIGHTDOWN	+*	RS
+
+LEFTDOWN	*_	STOP		**	SS	
