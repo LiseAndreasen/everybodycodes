@@ -1,5 +1,182 @@
 //=========================================================================
 
+//	3 heads
+//	heads	states	rules	steps
+//	3		1800	2900	6278
+
+HEADS	AAA								// outside, middle, inside
+START	***		TURN1	***		SDD
+TURN1	***		TURN3	***		SSD
+TURN3	***		URIGHT	+**		RRR		// up facing movement right
+
+URIGHT	*@*		URIGHT	+**		RRR
+URIGHT	*.*		DRIGHT	+++		RRR
+DRIGHT	*@*		DRIGHT	**+		RRR
+DRIGHT	*.*		URIGHT	+++		RRR
+
+DRIGHT	___		TURN4	***		LLL
+TURN4	***		TURN5	***		DLL
+TURN5	***		RDOWN	***		DDL
+
+RDOWN	*@*		RDOWN	+**		DDD
+RDOWN	*.*		LDOWN	+++		DDD
+LDOWN	*@*		LDOWN	**+		DDD
+LDOWN	*.*		RDOWN	+++		DDD
+
+LDOWN	___		TURN6	***		UUU
+TURN6	***		TURN7	***		LUU
+TURN7	***		DLEFT	***		LLU
+
+DLEFT	*@*		DLEFT	+**		LLL
+DLEFT	*.*		ULEFT	+++		LLL
+ULEFT	*@*		ULEFT	**+		LLL
+ULEFT	*.*		DLEFT	+++		LLL
+
+ULEFT	___		TURN8	***		RRR
+TURN8	***		TURN9	***		URR
+TURN9	***		LUP		***		UUR
+
+LUP		*@*		LUP		+**		UUU
+LUP		*.*		RUP		+++		UUU
+RUP		*@*		RUP		**+		UUU
+RUP		*.*		LUP		+++		UUU
+
+LUP		+++		STOP	***		UUU
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		3400	4500	15534
+
+HEADS	A
+
+START	*	UR1		+	R
+
+UR1		!	UR2		+	D		// up facing movement right
+UR2		@	UR3		*	U
+UR3		*	UR1		*	R
+UR2		.	DDR		+	D		// movement down, then right again
+DDR		*	DR1		+	R
+
+DR1		!	DR2		+	U
+DR2		@	DR3		*	D
+DR3		*	DR1		*	R
+DR2		.	UUR		+	U
+UUR		*	UR1		+	R
+
+DR1		_	RD1		*	L		// turn
+
+RD1		!	RD2		+	L
+RD2		@	RD3		*	R
+RD3		*	RD1		*	D
+RD2		.	LLD		+	L
+LLD		*	LD1		+	D
+
+LD1		!	LD2		+	R
+LD2		@	LD3		*	L
+LD3		*	LD1		*	D
+LD2		.	RRD		+	R
+RRD		*	RD1		+	D
+
+LD1		_	DL1		*	U
+
+DL1		!	DL2		+	U
+DL2		@	DL3		*	D
+DL3		*	DL1		*	L
+DL2		.	UUL		+	U
+UUL		*	UL1		+	L
+
+UL1		!	UL2		+	D
+UL2		@	UL3		*	U
+UL3		*	UL1		*	L
+UL2		.	DDL		+	D
+DDL		*	DL1		+	L
+
+UL1		_	LU1		*	R
+
+LU1		!	LU2		+	R
+LU2		@	LU3		*	L
+LU3		*	LU1		*	U
+LU2		.	RRU		+	R
+RRU		*	RU1		+	U
+
+RU1		!	RU2		+	L
+RU2		@	RU3		*	R
+RU3		*	RU1		*	U
+RU2		.	LLU		+	L
+LLU		*	LU1		+	U
+
+LU2		+	STOP	*	S
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	3		200		4500	10018
+
+HEADS	AAA								// state, write, look at barrels
+
+START		.**	START		***	LSD
+START		_**	START		X**	SSS
+START		X**	START		U+*	SRR
+
+START		U*@	START		U+*	SRR		// up facing movement right
+START		U*+	START		U+*	SRR
+START		U*.	START		d+*	SDS		// movement down, then right again
+START		d**	START		D+*	SDS
+
+START		D*@	START		D+*	SRR
+START		D*+	START		D+*	SRR
+START		D*.	START		u+*	SUS
+START		u**	START		U+*	SUS
+
+START		D*_	START		1**	SLL		// turn 2 right facing down mov
+START		1**	START		2**	SSL
+START		2**	START		R**	SSD
+
+START		R*@	START		R+*	SDD
+START		R*+	START		R+*	SDD
+START		R*.	START		l+*	SLS
+START		l**	START		L+*	SLS
+
+START		L*@	START		L+*	SDD
+START		L*+	START		L+*	SDD
+START		L*.	START		r+*	SRS
+START		r**	START		R+*	SRS
+
+START		L*_	START		3**	SUU
+START		3**	START		4**	SSU
+START		4**	START		E**	SSL
+
+START		E*@	START		E+*	SLL
+START		E*+	START		E+*	SLL
+START		E*.	START		v+*	SUS
+START		v**	START		V+*	SUS
+
+START		V*@	START		V+*	SLL
+START		V*+	START		V+*	SLL
+START		V*.	START		e+*	SDS
+START		e**	START		E+*	SDS
+
+START		V*_	START		5**	SRR
+START		5**	START		6**	SSR
+START		6**	START		M**	SSU
+
+START		M*@	START		M+*	SUU
+START		M*+	START		M+*	SUU
+START		M*.	START		s+*	SRS
+START		s**	START		S+*	SRS
+
+START		S*@	START		S+*	SUU
+START		S*+	START		S+*	SUU
+START		S*.	START		m+*	SLS
+START		m**	START		M+*	SLS
+
+START		M*_	STOP		_**	SSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	2		2500	4400	9918
@@ -61,4 +238,4 @@ RIGHTUP		*+	RIGHTUP		+*	UU
 RIGHTUP		*.	LEFTLEFTU	+*	LS
 LEFTLEFTU	**	LEFTUP		+*	LS
 
-LEFTTUP		*_	STOP		**	SS
+LEFTUP		*_	STOP		**	SS
