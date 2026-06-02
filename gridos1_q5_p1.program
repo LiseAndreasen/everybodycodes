@@ -8,9 +8,9 @@ HEADS	AA			// write, look at barrels
 
 START		**	START2		**	SD
 START2		**	UPRIGHT		+*	RR
-UPRIGHT		*@	UPRIGHT		+*	RR
+UPRIGHT		*@	UPRIGHT		+*	RR		// up facing movement right
 UPRIGHT		*+	UPRIGHT		+*	RR
-UPRIGHT		*.	DOWNDOWN	+*	DS
+UPRIGHT		*.	DOWNDOWN	+*	DS		// movement down, then right again
 DOWNDOWN	**	DOWNRIGHT	+*	DS
 DOWNRIGHT	*@	DOWNRIGHT	+*	RR
 DOWNRIGHT	*+	DOWNRIGHT	+*	RR
