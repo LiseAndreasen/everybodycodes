@@ -1,5 +1,81 @@
 //=========================================================================
 
+//	10 heads
+//	heads	states	rules	steps
+//	10		700		2024	2271
+
+(gridos1_q2_p2_10heads.php)
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		840		1417	7096
+
+HEADS	A
+
+START	A	READA	_	R
+START	B	READB	_	R
+START	_	STOP	*	S
+
+READA	A	READA	@	R
+READA	B	READB	_	R
+READB	A	READA	_	R
+READB	B	READB	@	R
+
+READA	_	DOWN	*	D
+READB	_	DOWN	*	D
+
+DOWN	*	READX	*	L
+
+READX	A	READAL	_	L
+READX	B	READBL	_	L
+READX	_	STOP	*	S
+
+READAL	A	READAL	@	L
+READAL	B	READBL	_	L
+READBL	A	READAL	_	L
+READBL	B	READBL	@	L
+
+READAL	_	DOWNR	*	D
+READBL	_	DOWNR	*	D
+
+DOWNR	*	START	*	R
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	3		200		1304	6892
+
+HEADS	AAA					// read 2 adjacent places, might write
+
+START	AAA	START	***	SRL	// spread heads, prepare to move right
+START	BBB	START	***	SRL
+START	!*_	START	**L	SSS
+
+START	AAL	START	@*L	RRS	// read pair, write power symbol
+START	BBL	START	@*L	RRS
+
+START	ABL	START	_*L	RRS	// read non-pair, delete
+START	BAL	START	_*L	RRS
+
+START	!_L	START	_*R	DDS	// at end of odd line, go down, prepare to move left
+START	!_R	START	**R	LLS
+START	__R	STOP	**_	SSS
+
+START	AAR	START	*@R	LLS	// read pair, write power symbol
+START	BBR	START	*@R	LLS
+
+START	ABR	START	*_R	LLS	// read non-pair, delete
+START	BAR	START	*_R	LLS
+
+START	_!R	START	*_L	DDS	// at end of even line, go down, prepare to move right
+START	_!L	START	**L	RRS
+START	__L	STOP	**_	SSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	2		400		1204	6792

@@ -1,5 +1,151 @@
 //=========================================================================
 
+//	10 heads
+//	heads	states	rules	steps
+//	10		1547	2126	2366
+
+(gridos1_q2_p3_10heads.php)
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		2547	4056	45712
+
+HEADS	A
+
+START	*	READ0	*	L
+READ0	*	READX	0	R		// write before beginning of line
+
+READX	A	READA	*	D		// read 1st character
+READX	B	READB	*	D
+READ	A	READA	*	D
+READ	B	READB	*	D
+
+READA	A	READAAX	*	U		// read character below
+READA	B	READABX	*	U
+READB	A	READBAX	*	U
+READB	B	READBBX	*	U
+
+READAAX	*	READAA	*	R
+READABX	*	READAB	*	R
+READBAX	*	READBA	*	R
+READBBX	*	READBB	*	R
+
+READAA	A	READAAA	*	L		// read character to the right
+READAA	B	READAAB	*	L
+READAB	A	READABA	*	L
+READAB	B	READABB	*	L
+READBA	A	READBAA	*	L
+READBA	B	READBAB	*	L
+READBB	A	READBBA	*	L
+READBB	B	READBBB	*	L
+
+READAAA	*	EXTRA	*	U		// write 0-1 power symbols
+READAAB	*	READ	@	R
+READABA	*	READ	@	R
+READABB	*	READ	_	R
+READBAA	*	READ	_	R
+READBAB	*	READ	@	R
+READBBA	*	READ	@	R
+READBBB	*	EXTRA	*	U
+
+EXTRA	_	DOWN	@	D		// write 2nd power symbol
+EXTRA	@	EXTRA	*	U
+
+DOWN	@	DOWN	*	D
+DOWN	A	READ	@	R		// write 1st power symbol
+DOWN	B	READ	@	R
+
+READA	_	READABX	*	U		// last line
+READB	_	READBAX	*	U
+
+READAA	_	READAAB	*	L		// last column
+READAB	_	READABB	*	L
+READBA	_	READBAA	*	L
+READBB	_	READBBA	*	L
+
+READ	_	LEFT	*	L		// end of line, go left
+LEFT	_	LEFT	*	L
+LEFT	@	LEFT	*	L
+LEFT	0	RESET	_	D
+RESET	_	READX	0	R
+
+READX	_	END		*	L
+END		0	STOP	_	S
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	6		200		2026	6795	
+
+HEADS AAAAAA
+
+// 5
+//
+// 12
+// 34
+
+START 	AAAAAA	START	******	LSSDDU
+START	BBBBBB	START	******	LSSDDU
+START	_*****	START	R*****	SSRSRS
+
+// 2 lines
+
+START	RAAA**	START	R@***@	SRRRRR
+START	RAAB**	START	R@****	SRRRRS
+START	RABA**	START	R@****	SRRRRS
+START	RABB**	START	R_****	SRRRRS
+START	RBAA**	START	R_****	SRRRRS
+START	RBAB**	START	R@****	SRRRRS
+START	RBBA**	START	R@****	SRRRRS
+START	RBBB**	START	R@***@	SRRRRR
+
+START	R!___*	STOP	__****	SSSSSS
+START	L!_*_*	START	L*****	SLLLLS
+
+START	LAA*A*	START	L*@**@	SLLLLR
+START	LAA*B*	START	L*@***	SLLLLS
+START	LAB*A*	START	L*_***	SLLLLS
+START	LAB*B*	START	L*@***	SLLLLS
+START	LBA*A*	START	L*@***	SLLLLS
+START	LBA*B*	START	L*_***	SLLLLS
+START	LBB*A*	START	L*@***	SLLLLS
+START	LBB*B*	START	L*@**@	SLLLLR
+
+START	L_!__*	STOP	_*_***	SSSSSS
+START	R_!_**	START	R*****	SRRRRS
+
+// 1 line
+
+START	RAA_**	START	R@****	SRRRRS
+START	RAB_**	START	R_****	SRRRRS
+START	RBA_**	START	R_****	SRRRRS
+START	RBB_**	START	R@****	SRRRRS
+
+START	LAA*_*	START	L*@***	SLLLLS
+START	LAB*_*	START	L*_***	SLLLLS
+START	LBA*_*	START	L*_***	SLLLLS
+START	LBB*_*	START	L*@***	SLLLLS
+
+// 1 column
+
+START	RA_A**	START	L@****	SDDDDS
+START	RA_B**	START	L_****	SDDDDS
+START	RB_A**	START	L_****	SDDDDS
+START	RB_B**	START	L@****	SDDDDS
+
+START	L_A*A*	START	R*@***	SDDDDS	
+START	L_A*B*	START	R*_***	SDDDDS	
+START	L_B*A*	START	R*_***	SDDDDS	
+START	L_B*B*	START	R*@***	SDDDDS	
+
+START	R__***	STOP	_*****	SSSSSS
+START	L__***	STOP	_*****	SSSSSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	5		485		2026	6795

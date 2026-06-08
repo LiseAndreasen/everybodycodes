@@ -1,5 +1,185 @@
 //=========================================================================
 
+//	8 heads
+//	heads	states	rules	steps
+//	8		500		1388	2774
+
+HEADS	DDAAABBB
+						// state x 2
+						// outside, middle, inside x 2
+						// moving right, outside = up
+					
+START	********	TURN1	********	LLSDDSLL
+TURN1	********	TURN2	********	USSSDSSL
+TURN2	********	MOVE	OO+**+++	SSRRRDDD
+						// outside = up, when moving right and vice versa
+
+MOVE	OO.@..@*	MOVE	OO+**+**	SSRRRDDD
+MOVE	OO.@....	MOVE	OI+**+++	SSRRRDDD
+MOVE	OO....@.	MOVE	IO++++**	SSRRRDDD
+MOVE	OO......	MOVE	II++++++	SSRRRDDD
+MOVE	OI.@..@.	MOVE	OI+****+	SSRRRDDD
+MOVE	OI.@....	MOVE	OO+**+++	SSRRRDDD
+MOVE	OI....@.	MOVE	II+++**+	SSRRRDDD
+MOVE	OI......	MOVE	IO++++++	SSRRRDDD
+MOVE	IO.@..@.	MOVE	IO**++**	SSRRRDDD
+MOVE	IO.@....	MOVE	II**++++	SSRRRDDD
+MOVE	IO....@.	MOVE	OO++++**	SSRRRDDD
+MOVE	IO......	MOVE	OI++++++	SSRRRDDD
+MOVE	II.@..@.	MOVE	II**+**+	SSRRRDDD
+MOVE	II.@....	MOVE	IO**++++	SSRRRDDD
+MOVE	II....@.	MOVE	OI+++**+	SSRRRDDD
+MOVE	II......	MOVE	OO++++++	SSRRRDDD
+
+						// top side is done
+MOVE	OO+@+.@.	MOVE	OO+**+**	SSSSSDDD
+MOVE	OO+@+...	MOVE	OI+**+++	SSSSSDDD
+MOVE	OO+.+.@.	MOVE	IO++++**	SSSSSDDD
+MOVE	OO+.+...	MOVE	II++++++	SSSSSDDD
+MOVE	OO+++.@.	MOVE	IO++++**	SSSSSDDD
+MOVE	OO+++...	MOVE	II++++++	SSSSSDDD
+
+MOVE	OI+@+.@.	MOVE	OI+****+	SSSSSDDD
+MOVE	OI+@+...	MOVE	OO+**+++	SSSSSDDD
+MOVE	OI+.+.@.	MOVE	II+++**+	SSSSSDDD
+MOVE	OI+.+...	MOVE	IO++++++	SSSSSDDD
+MOVE	OI+++.@.	MOVE	II+++**+	SSSSSDDD
+MOVE	OI+++...	MOVE	IO++++++	SSSSSDDD
+
+MOVE	IO+@+.@.	MOVE	IO**++**	SSSSSDDD
+MOVE	IO+@+...	MOVE	II**++++	SSSSSDDD
+MOVE	IO+.+.@.	MOVE	OO++++**	SSSSSDDD
+MOVE	IO+.+...	MOVE	OI++++++	SSSSSDDD
+MOVE	IO+++.@.	MOVE	OO++++**	SSSSSDDD
+MOVE	IO+++...	MOVE	OI++++++	SSSSSDDD
+
+MOVE	II+@+.@.	MOVE	II**+**+	SSSSSDDD
+MOVE	II+@+...	MOVE	IO**++++	SSSSSDDD
+MOVE	II+.+.@.	MOVE	OI+++**+	SSSSSDDD
+MOVE	II+.+...	MOVE	OO++++++	SSSSSDDD
+MOVE	II+++.@.	MOVE	OI+++**+	SSSSSDDD
+MOVE	II+++...	MOVE	OO++++++	SSSSSDDD
+
+						// right side is done
+MOVE	OO.@.___	MOVE	OO+*****	SSRRRSSS
+MOVE	OO...___	MOVE	IO+++***	SSRRRSSS
+MOVE	OI.@.___	MOVE	OI+*****	SSRRRSSS
+MOVE	OI...___	MOVE	II+++***	SSRRRSSS
+MOVE	IO.@.___	MOVE	IO**+***	SSRRRSSS
+MOVE	IO...___	MOVE	OO+++***	SSRRRSSS
+MOVE	II.@.___	MOVE	II**+***	SSRRRSSS
+MOVE	II...___	MOVE	OI+++***	SSRRRSSS
+
+						// both sides are done
+MOVE	**+++___	STOP	__******	SSSSSSSS
+MOVE	**+@+___	STOP	__******	SSSSSSSS
+MOVE	**+.+___	STOP	__+++***	SSSSSSSS
+
+//=========================================================================
+
+//	3 heads
+//	heads	states	rules	steps
+//	3		1000	1500	5074
+
+HEADS	AAA								// outside, middle, inside
+START	***		TURN1	***		SDD
+TURN1	***		TURN3	***		SSD
+TURN3	***		URIGHT	+**		RRR		// up facing movement right
+
+URIGHT	.@.		URIGHT	+**		RRR
+URIGHT	...		DRIGHT	+++		RRR
+DRIGHT	.@.		DRIGHT	**+		RRR
+DRIGHT	...		URIGHT	+++		RRR
+
+DRIGHT	___		TURN4	***		LLL
+TURN4	***		TURN5	***		DLL
+TURN5	***		RDOWN	***		DDL
+
+RDOWN	.@.		RDOWN	+**		DDD
+RDOWN	*.*		LDOWN	+++		DDD
+LDOWN	.@.		LDOWN	**+		DDD
+LDOWN	...		RDOWN	+++		DDD
+
+LDOWN	___		STOP	***		SSS
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		1800	2300	13422
+
+HEADS	A
+
+START	*	UR1		+	R
+
+UR1		!	UR2		+	D		// up facing movement right
+UR2		@	UR3		*	U
+UR3		*	UR1		*	R
+UR2		.	DDR		+	D		// movement down, then right again
+DDR		*	DR1		+	R
+
+DR1		!	DR2		+	U
+DR2		@	DR3		*	D
+DR3		*	DR1		*	R
+DR2		.	UUR		+	U
+UUR		*	UR1		+	R
+
+DR1		_	RD1		*	L		// turn
+
+RD1		!	RD2		+	L
+RD2		@	RD3		*	R
+RD3		*	RD1		*	D
+RD2		.	LLD		+	L
+LLD		*	LD1		+	D
+
+LD1		!	LD2		+	R
+LD2		@	LD3		*	L
+LD3		*	LD1		*	D
+LD2		.	RRD		+	R
+RRD		*	RD1		+	D
+
+LD1		_	STOP	*	S
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	3		200		2300	6594
+
+HEADS	AAA								// state, write, look at barrels
+
+START		.**	START		***	LSD
+START		_**	START		S**	SSS
+START		S**	START		U+*	SRR
+
+START		U*@	START		U+*	SRR		// up facing movement right
+START		U*+	START		U+*	SRR
+START		U*.	START		d+*	SDS		// movement down, then right again
+START		d**	START		D+*	SDS
+
+START		D*@	START		D+*	SRR
+START		D*+	START		D+*	SRR
+START		D*.	START		u+*	SUS
+START		u**	START		U+*	SUS
+
+START		D*_	START		1**	SLL		// turn 2 right facing down mov
+START		1**	START		2**	SSL
+START		2**	START		R**	SSD
+
+START		R*@	START		R+*	SDD
+START		R*+	START		R+*	SDD
+START		R*.	START		l+*	SLS
+START		l**	START		L+*	SLS
+
+START		L*@	START		L+*	SDD
+START		L*+	START		L+*	SDD
+START		L*.	START		r+*	SRS
+START		r**	START		R+*	SRS
+
+START		L*_	STOP		_**	SSS	
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	2		1300	2200	6494

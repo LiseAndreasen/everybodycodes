@@ -1,5 +1,535 @@
 //=========================================================================
 
+//	10 heads
+//	heads	states	rules	steps
+//	10		2202	3107	10249
+
+(gridos1_q4_p3_10heads.php)
+
+//=========================================================================
+
+//	10 heads for 9- nails, basic for 10+ nails
+//	heads	states	rules	steps
+//	10		1664	2574	49090
+
+HEADS		AAAAAAAAAA
+
+//spread heads
+START		**********	START2	**********	SDDDDDDDDD
+START2		**********	START3	**********	SSDDDDDDDD
+START3		**********	START4	**********	SSSDDDDDDD
+START4		**********	START5	**********	SSSSDDDDDD
+START5		**********	START6	**********	SSSSSDDDDD
+START6		**********	START7	**********	SSSSSSDDDD
+START7		**********	START8	**********	SSSSSSSDDD
+START8		**********	START9	**********	SSSSSSSSDD
+START9		**********	READ0	**********	SSSSSSSSSD
+
+READ0		#********_	READ0	**********	RRRRRRRRRR
+
+//looking for head 1
+//2 line(s)
+READ0		==________	READ0	**********	RRRRRRRRRR
+READ0		|!________	READ1	**********	RRRRRRRRRR
+READ0		=|________	READ1	**********	RRRRRRRRRR
+
+//3 line(s)
+READ0		===_______	READ0	**********	RRRRRRRRRR
+READ0		|!!_______	READ1	**********	RRRRRRRRRR
+READ0		=|!_______	READ1	**********	RRRRRRRRRR
+READ0		==|_______	READ1	**********	RRRRRRRRRR
+
+//4 line(s)
+READ0		====______	READ0	**********	RRRRRRRRRR
+READ0		|!!!______	READ1	**********	RRRRRRRRRR
+READ0		=|!!______	READ1	**********	RRRRRRRRRR
+READ0		==|!______	READ1	**********	RRRRRRRRRR
+READ0		===|______	READ1	**********	RRRRRRRRRR
+
+//5 line(s)
+READ0		=====_____	READ0	**********	RRRRRRRRRR
+READ0		|!!!!_____	READ1	**********	RRRRRRRRRR
+READ0		=|!!!_____	READ1	**********	RRRRRRRRRR
+READ0		==|!!_____	READ1	**********	RRRRRRRRRR
+READ0		===|!_____	READ1	**********	RRRRRRRRRR
+READ0		====|_____	READ1	**********	RRRRRRRRRR
+
+//6 line(s)
+READ0		======____	READ0	**********	RRRRRRRRRR
+READ0		|!!!!!____	READ1	**********	RRRRRRRRRR
+READ0		=|!!!!____	READ1	**********	RRRRRRRRRR
+READ0		==|!!!____	READ1	**********	RRRRRRRRRR
+READ0		===|!!____	READ1	**********	RRRRRRRRRR
+READ0		====|!____	READ1	**********	RRRRRRRRRR
+READ0		=====|____	READ1	**********	RRRRRRRRRR
+
+//7 line(s)
+READ0		=======___	READ0	**********	RRRRRRRRRR
+READ0		|!!!!!!___	READ1	**********	RRRRRRRRRR
+READ0		=|!!!!!___	READ1	**********	RRRRRRRRRR
+READ0		==|!!!!___	READ1	**********	RRRRRRRRRR
+READ0		===|!!!___	READ1	**********	RRRRRRRRRR
+READ0		====|!!___	READ1	**********	RRRRRRRRRR
+READ0		=====|!___	READ1	**********	RRRRRRRRRR
+READ0		======|___	READ1	**********	RRRRRRRRRR
+
+//8 line(s)
+READ0		========__	READ0	**********	RRRRRRRRRR
+READ0		|!!!!!!!__	READ1	**********	RRRRRRRRRR
+READ0		=|!!!!!!__	READ1	**********	RRRRRRRRRR
+READ0		==|!!!!!__	READ1	**********	RRRRRRRRRR
+READ0		===|!!!!__	READ1	**********	RRRRRRRRRR
+READ0		====|!!!__	READ1	**********	RRRRRRRRRR
+READ0		=====|!!__	READ1	**********	RRRRRRRRRR
+READ0		======|!__	READ1	**********	RRRRRRRRRR
+READ0		=======|__	READ1	**********	RRRRRRRRRR
+
+//9 line(s)
+READ0		=========_	READ0	**********	RRRRRRRRRR
+READ0		|!!!!!!!!_	READ1	**********	RRRRRRRRRR
+READ0		=|!!!!!!!_	READ1	**********	RRRRRRRRRR
+READ0		==|!!!!!!_	READ1	**********	RRRRRRRRRR
+READ0		===|!!!!!_	READ1	**********	RRRRRRRRRR
+READ0		====|!!!!_	READ1	**********	RRRRRRRRRR
+READ0		=====|!!!_	READ1	**********	RRRRRRRRRR
+READ0		======|!!_	READ1	**********	RRRRRRRRRR
+READ0		=======|!_	READ1	**********	RRRRRRRRRR
+READ0		========|_	READ1	**********	RRRRRRRRRR
+
+//looking for head 2
+//2 line(s)
+READ1		_=________	READ1	**********	RRRRRRRRRR
+READ1		=_________	READ1	**********	RRRRRRRRRR
+READ1		|_________	READ2	|*********	RRRRRRRRRR
+READ1		_|________	READ2	*|********	RRRRRRRRRR
+
+//3 line(s)
+READ1		_==_______	READ1	**********	RRRRRRRRRR
+READ1		=_=_______	READ1	**********	RRRRRRRRRR
+READ1		==________	READ1	**********	RRRRRRRRRR
+READ1		|_!_______	READ2	|*|*******	RRRRRRRRRR
+READ1		|!________	READ2	||********	RRRRRRRRRR
+READ1		=|________	READ2	||********	RRRRRRRRRR
+READ1		_|!_______	READ2	*||*******	RRRRRRRRRR
+READ1		_=|_______	READ2	*||*******	RRRRRRRRRR
+READ1		=_|_______	READ2	|*|*******	RRRRRRRRRR
+
+//4 line(s)
+READ1		_===______	READ1	**********	RRRRRRRRRR
+READ1		=_==______	READ1	**********	RRRRRRRRRR
+READ1		==_=______	READ1	**********	RRRRRRRRRR
+READ1		===_______	READ1	**********	RRRRRRRRRR
+READ1		|_!!______	READ2	|*||******	RRRRRRRRRR
+READ1		|!_!______	READ2	||*|******	RRRRRRRRRR
+READ1		|!!_______	READ2	|||*******	RRRRRRRRRR
+READ1		=|_!______	READ2	||*|******	RRRRRRRRRR
+READ1		=|!_______	READ2	|||*******	RRRRRRRRRR
+READ1		==|_______	READ2	|||*******	RRRRRRRRRR
+READ1		_|!!______	READ2	*|||******	RRRRRRRRRR
+READ1		_=|!______	READ2	*|||******	RRRRRRRRRR
+READ1		_==|______	READ2	*|||******	RRRRRRRRRR
+READ1		=_|!______	READ2	|*||******	RRRRRRRRRR
+READ1		=_=|______	READ2	|*||******	RRRRRRRRRR
+READ1		==_|______	READ2	||*|******	RRRRRRRRRR
+
+//5 line(s)
+READ1		_====_____	READ1	**********	RRRRRRRRRR
+READ1		=_===_____	READ1	**********	RRRRRRRRRR
+READ1		==_==_____	READ1	**********	RRRRRRRRRR
+READ1		===_=_____	READ1	**********	RRRRRRRRRR
+READ1		====______	READ1	**********	RRRRRRRRRR
+READ1		|_!!!_____	READ2	|*|||*****	RRRRRRRRRR
+READ1		|!_!!_____	READ2	||*||*****	RRRRRRRRRR
+READ1		|!!_!_____	READ2	|||*|*****	RRRRRRRRRR
+READ1		|!!!______	READ2	||||******	RRRRRRRRRR
+READ1		=|_!!_____	READ2	||*||*****	RRRRRRRRRR
+READ1		=|!_!_____	READ2	|||*|*****	RRRRRRRRRR
+READ1		=|!!______	READ2	||||******	RRRRRRRRRR
+READ1		==|_!_____	READ2	|||*|*****	RRRRRRRRRR
+READ1		==|!______	READ2	||||******	RRRRRRRRRR
+READ1		===|______	READ2	||||******	RRRRRRRRRR
+READ1		_|!!!_____	READ2	*||||*****	RRRRRRRRRR
+READ1		_=|!!_____	READ2	*||||*****	RRRRRRRRRR
+READ1		_==|!_____	READ2	*||||*****	RRRRRRRRRR
+READ1		_===|_____	READ2	*||||*****	RRRRRRRRRR
+READ1		=_|!!_____	READ2	|*|||*****	RRRRRRRRRR
+READ1		=_=|!_____	READ2	|*|||*****	RRRRRRRRRR
+READ1		=_==|_____	READ2	|*|||*****	RRRRRRRRRR
+READ1		==_|!_____	READ2	||*||*****	RRRRRRRRRR
+READ1		==_=|_____	READ2	||*||*****	RRRRRRRRRR
+READ1		===_|_____	READ2	|||*|*****	RRRRRRRRRR
+
+//6 line(s)
+READ1		_=====____	READ1	**********	RRRRRRRRRR
+READ1		=_====____	READ1	**********	RRRRRRRRRR
+READ1		==_===____	READ1	**********	RRRRRRRRRR
+READ1		===_==____	READ1	**********	RRRRRRRRRR
+READ1		====_=____	READ1	**********	RRRRRRRRRR
+READ1		=====_____	READ1	**********	RRRRRRRRRR
+READ1		|_!!!!____	READ2	|*||||****	RRRRRRRRRR
+READ1		|!_!!!____	READ2	||*|||****	RRRRRRRRRR
+READ1		|!!_!!____	READ2	|||*||****	RRRRRRRRRR
+READ1		|!!!_!____	READ2	||||*|****	RRRRRRRRRR
+READ1		|!!!!_____	READ2	|||||*****	RRRRRRRRRR
+READ1		=|_!!!____	READ2	||*|||****	RRRRRRRRRR
+READ1		=|!_!!____	READ2	|||*||****	RRRRRRRRRR
+READ1		=|!!_!____	READ2	||||*|****	RRRRRRRRRR
+READ1		=|!!!_____	READ2	|||||*****	RRRRRRRRRR
+READ1		==|_!!____	READ2	|||*||****	RRRRRRRRRR
+READ1		==|!_!____	READ2	||||*|****	RRRRRRRRRR
+READ1		==|!!_____	READ2	|||||*****	RRRRRRRRRR
+READ1		===|_!____	READ2	||||*|****	RRRRRRRRRR
+READ1		===|!_____	READ2	|||||*****	RRRRRRRRRR
+READ1		====|_____	READ2	|||||*****	RRRRRRRRRR
+READ1		_|!!!!____	READ2	*|||||****	RRRRRRRRRR
+READ1		_=|!!!____	READ2	*|||||****	RRRRRRRRRR
+READ1		_==|!!____	READ2	*|||||****	RRRRRRRRRR
+READ1		_===|!____	READ2	*|||||****	RRRRRRRRRR
+READ1		_====|____	READ2	*|||||****	RRRRRRRRRR
+READ1		=_|!!!____	READ2	|*||||****	RRRRRRRRRR
+READ1		=_=|!!____	READ2	|*||||****	RRRRRRRRRR
+READ1		=_==|!____	READ2	|*||||****	RRRRRRRRRR
+READ1		=_===|____	READ2	|*||||****	RRRRRRRRRR
+READ1		==_|!!____	READ2	||*|||****	RRRRRRRRRR
+READ1		==_=|!____	READ2	||*|||****	RRRRRRRRRR
+READ1		==_==|____	READ2	||*|||****	RRRRRRRRRR
+READ1		===_|!____	READ2	|||*||****	RRRRRRRRRR
+READ1		===_=|____	READ2	|||*||****	RRRRRRRRRR
+READ1		====_|____	READ2	||||*|****	RRRRRRRRRR
+
+//7 line(s)
+READ1		_======___	READ1	**********	RRRRRRRRRR
+READ1		=_=====___	READ1	**********	RRRRRRRRRR
+READ1		==_====___	READ1	**********	RRRRRRRRRR
+READ1		===_===___	READ1	**********	RRRRRRRRRR
+READ1		====_==___	READ1	**********	RRRRRRRRRR
+READ1		=====_=___	READ1	**********	RRRRRRRRRR
+READ1		======____	READ1	**********	RRRRRRRRRR
+READ1		|_!!!!!___	READ2	|*|||||***	RRRRRRRRRR
+READ1		|!_!!!!___	READ2	||*||||***	RRRRRRRRRR
+READ1		|!!_!!!___	READ2	|||*|||***	RRRRRRRRRR
+READ1		|!!!_!!___	READ2	||||*||***	RRRRRRRRRR
+READ1		|!!!!_!___	READ2	|||||*|***	RRRRRRRRRR
+READ1		|!!!!!____	READ2	||||||****	RRRRRRRRRR
+READ1		=|_!!!!___	READ2	||*||||***	RRRRRRRRRR
+READ1		=|!_!!!___	READ2	|||*|||***	RRRRRRRRRR
+READ1		=|!!_!!___	READ2	||||*||***	RRRRRRRRRR
+READ1		=|!!!_!___	READ2	|||||*|***	RRRRRRRRRR
+READ1		=|!!!!____	READ2	||||||****	RRRRRRRRRR
+READ1		==|_!!!___	READ2	|||*|||***	RRRRRRRRRR
+READ1		==|!_!!___	READ2	||||*||***	RRRRRRRRRR
+READ1		==|!!_!___	READ2	|||||*|***	RRRRRRRRRR
+READ1		==|!!!____	READ2	||||||****	RRRRRRRRRR
+READ1		===|_!!___	READ2	||||*||***	RRRRRRRRRR
+READ1		===|!_!___	READ2	|||||*|***	RRRRRRRRRR
+READ1		===|!!____	READ2	||||||****	RRRRRRRRRR
+READ1		====|_!___	READ2	|||||*|***	RRRRRRRRRR
+READ1		====|!____	READ2	||||||****	RRRRRRRRRR
+READ1		=====|____	READ2	||||||****	RRRRRRRRRR
+READ1		_|!!!!!___	READ2	*||||||***	RRRRRRRRRR
+READ1		_=|!!!!___	READ2	*||||||***	RRRRRRRRRR
+READ1		_==|!!!___	READ2	*||||||***	RRRRRRRRRR
+READ1		_===|!!___	READ2	*||||||***	RRRRRRRRRR
+READ1		_====|!___	READ2	*||||||***	RRRRRRRRRR
+READ1		_=====|___	READ2	*||||||***	RRRRRRRRRR
+READ1		=_|!!!!___	READ2	|*|||||***	RRRRRRRRRR
+READ1		=_=|!!!___	READ2	|*|||||***	RRRRRRRRRR
+READ1		=_==|!!___	READ2	|*|||||***	RRRRRRRRRR
+READ1		=_===|!___	READ2	|*|||||***	RRRRRRRRRR
+READ1		=_====|___	READ2	|*|||||***	RRRRRRRRRR
+READ1		==_|!!!___	READ2	||*||||***	RRRRRRRRRR
+READ1		==_=|!!___	READ2	||*||||***	RRRRRRRRRR
+READ1		==_==|!___	READ2	||*||||***	RRRRRRRRRR
+READ1		==_===|___	READ2	||*||||***	RRRRRRRRRR
+READ1		===_|!!___	READ2	|||*|||***	RRRRRRRRRR
+READ1		===_=|!___	READ2	|||*|||***	RRRRRRRRRR
+READ1		===_==|___	READ2	|||*|||***	RRRRRRRRRR
+READ1		====_|!___	READ2	||||*||***	RRRRRRRRRR
+READ1		====_=|___	READ2	||||*||***	RRRRRRRRRR
+READ1		=====_|___	READ2	|||||*|***	RRRRRRRRRR
+
+//8 line(s)
+READ1		_=======__	READ1	**********	RRRRRRRRRR
+READ1		=_======__	READ1	**********	RRRRRRRRRR
+READ1		==_=====__	READ1	**********	RRRRRRRRRR
+READ1		===_====__	READ1	**********	RRRRRRRRRR
+READ1		====_===__	READ1	**********	RRRRRRRRRR
+READ1		=====_==__	READ1	**********	RRRRRRRRRR
+READ1		======_=__	READ1	**********	RRRRRRRRRR
+READ1		=======___	READ1	**********	RRRRRRRRRR
+READ1		|_!!!!!!__	READ2	|*||||||**	RRRRRRRRRR
+READ1		|!_!!!!!__	READ2	||*|||||**	RRRRRRRRRR
+READ1		|!!_!!!!__	READ2	|||*||||**	RRRRRRRRRR
+READ1		|!!!_!!!__	READ2	||||*|||**	RRRRRRRRRR
+READ1		|!!!!_!!__	READ2	|||||*||**	RRRRRRRRRR
+READ1		|!!!!!_!__	READ2	||||||*|**	RRRRRRRRRR
+READ1		|!!!!!!___	READ2	|||||||***	RRRRRRRRRR
+READ1		=|_!!!!!__	READ2	||*|||||**	RRRRRRRRRR
+READ1		=|!_!!!!__	READ2	|||*||||**	RRRRRRRRRR
+READ1		=|!!_!!!__	READ2	||||*|||**	RRRRRRRRRR
+READ1		=|!!!_!!__	READ2	|||||*||**	RRRRRRRRRR
+READ1		=|!!!!_!__	READ2	||||||*|**	RRRRRRRRRR
+READ1		=|!!!!!___	READ2	|||||||***	RRRRRRRRRR
+READ1		==|_!!!!__	READ2	|||*||||**	RRRRRRRRRR
+READ1		==|!_!!!__	READ2	||||*|||**	RRRRRRRRRR
+READ1		==|!!_!!__	READ2	|||||*||**	RRRRRRRRRR
+READ1		==|!!!_!__	READ2	||||||*|**	RRRRRRRRRR
+READ1		==|!!!!___	READ2	|||||||***	RRRRRRRRRR
+READ1		===|_!!!__	READ2	||||*|||**	RRRRRRRRRR
+READ1		===|!_!!__	READ2	|||||*||**	RRRRRRRRRR
+READ1		===|!!_!__	READ2	||||||*|**	RRRRRRRRRR
+READ1		===|!!!___	READ2	|||||||***	RRRRRRRRRR
+READ1		====|_!!__	READ2	|||||*||**	RRRRRRRRRR
+READ1		====|!_!__	READ2	||||||*|**	RRRRRRRRRR
+READ1		====|!!___	READ2	|||||||***	RRRRRRRRRR
+READ1		=====|_!__	READ2	||||||*|**	RRRRRRRRRR
+READ1		=====|!___	READ2	|||||||***	RRRRRRRRRR
+READ1		======|___	READ2	|||||||***	RRRRRRRRRR
+READ1		_|!!!!!!__	READ2	*|||||||**	RRRRRRRRRR
+READ1		_=|!!!!!__	READ2	*|||||||**	RRRRRRRRRR
+READ1		_==|!!!!__	READ2	*|||||||**	RRRRRRRRRR
+READ1		_===|!!!__	READ2	*|||||||**	RRRRRRRRRR
+READ1		_====|!!__	READ2	*|||||||**	RRRRRRRRRR
+READ1		_=====|!__	READ2	*|||||||**	RRRRRRRRRR
+READ1		_======|__	READ2	*|||||||**	RRRRRRRRRR
+READ1		=_|!!!!!__	READ2	|*||||||**	RRRRRRRRRR
+READ1		=_=|!!!!__	READ2	|*||||||**	RRRRRRRRRR
+READ1		=_==|!!!__	READ2	|*||||||**	RRRRRRRRRR
+READ1		=_===|!!__	READ2	|*||||||**	RRRRRRRRRR
+READ1		=_====|!__	READ2	|*||||||**	RRRRRRRRRR
+READ1		=_=====|__	READ2	|*||||||**	RRRRRRRRRR
+READ1		==_|!!!!__	READ2	||*|||||**	RRRRRRRRRR
+READ1		==_=|!!!__	READ2	||*|||||**	RRRRRRRRRR
+READ1		==_==|!!__	READ2	||*|||||**	RRRRRRRRRR
+READ1		==_===|!__	READ2	||*|||||**	RRRRRRRRRR
+READ1		==_====|__	READ2	||*|||||**	RRRRRRRRRR
+READ1		===_|!!!__	READ2	|||*||||**	RRRRRRRRRR
+READ1		===_=|!!__	READ2	|||*||||**	RRRRRRRRRR
+READ1		===_==|!__	READ2	|||*||||**	RRRRRRRRRR
+READ1		===_===|__	READ2	|||*||||**	RRRRRRRRRR
+READ1		====_|!!__	READ2	||||*|||**	RRRRRRRRRR
+READ1		====_=|!__	READ2	||||*|||**	RRRRRRRRRR
+READ1		====_==|__	READ2	||||*|||**	RRRRRRRRRR
+READ1		=====_|!__	READ2	|||||*||**	RRRRRRRRRR
+READ1		=====_=|__	READ2	|||||*||**	RRRRRRRRRR
+READ1		======_|__	READ2	||||||*|**	RRRRRRRRRR
+
+//9 line(s)
+READ1		_========_	READ1	**********	RRRRRRRRRR
+READ1		=_=======_	READ1	**********	RRRRRRRRRR
+READ1		==_======_	READ1	**********	RRRRRRRRRR
+READ1		===_=====_	READ1	**********	RRRRRRRRRR
+READ1		====_====_	READ1	**********	RRRRRRRRRR
+READ1		=====_===_	READ1	**********	RRRRRRRRRR
+READ1		======_==_	READ1	**********	RRRRRRRRRR
+READ1		=======_=_	READ1	**********	RRRRRRRRRR
+READ1		========__	READ1	**********	RRRRRRRRRR
+READ1		|_!!!!!!!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		|!_!!!!!!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		|!!_!!!!!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		|!!!_!!!!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		|!!!!_!!!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		|!!!!!_!!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		|!!!!!!_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		|!!!!!!!__	READ2	||||||||**	RRRRRRRRRR
+READ1		=|_!!!!!!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		=|!_!!!!!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		=|!!_!!!!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		=|!!!_!!!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		=|!!!!_!!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		=|!!!!!_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		=|!!!!!!__	READ2	||||||||**	RRRRRRRRRR
+READ1		==|_!!!!!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		==|!_!!!!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		==|!!_!!!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		==|!!!_!!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		==|!!!!_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		==|!!!!!__	READ2	||||||||**	RRRRRRRRRR
+READ1		===|_!!!!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		===|!_!!!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		===|!!_!!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		===|!!!_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		===|!!!!__	READ2	||||||||**	RRRRRRRRRR
+READ1		====|_!!!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		====|!_!!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		====|!!_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		====|!!!__	READ2	||||||||**	RRRRRRRRRR
+READ1		=====|_!!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		=====|!_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		=====|!!__	READ2	||||||||**	RRRRRRRRRR
+READ1		======|_!_	READ2	|||||||*|*	RRRRRRRRRR
+READ1		======|!__	READ2	||||||||**	RRRRRRRRRR
+READ1		=======|__	READ2	||||||||**	RRRRRRRRRR
+READ1		_|!!!!!!!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_=|!!!!!!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_==|!!!!!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_===|!!!!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_====|!!!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_=====|!!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_======|!_	READ2	*||||||||*	RRRRRRRRRR
+READ1		_=======|_	READ2	*||||||||*	RRRRRRRRRR
+READ1		=_|!!!!!!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		=_=|!!!!!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		=_==|!!!!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		=_===|!!!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		=_====|!!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		=_=====|!_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		=_======|_	READ2	|*|||||||*	RRRRRRRRRR
+READ1		==_|!!!!!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		==_=|!!!!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		==_==|!!!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		==_===|!!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		==_====|!_	READ2	||*||||||*	RRRRRRRRRR
+READ1		==_=====|_	READ2	||*||||||*	RRRRRRRRRR
+READ1		===_|!!!!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		===_=|!!!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		===_==|!!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		===_===|!_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		===_====|_	READ2	|||*|||||*	RRRRRRRRRR
+READ1		====_|!!!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		====_=|!!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		====_==|!_	READ2	||||*||||*	RRRRRRRRRR
+READ1		====_===|_	READ2	||||*||||*	RRRRRRRRRR
+READ1		=====_|!!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		=====_=|!_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		=====_==|_	READ2	|||||*|||*	RRRRRRRRRR
+READ1		======_|!_	READ2	||||||*||*	RRRRRRRRRR
+READ1		======_=|_	READ2	||||||*||*	RRRRRRRRRR
+READ1		=======_|_	READ2	|||||||*|*	RRRRRRRRRR
+
+//post nails
+READ2		!********_	READ2	__________	RRRRRRRRRR
+READ2		_!*******_	READ2	__________	RRRRRRRRRR
+READ2		__!******_	READ2	__________	RRRRRRRRRR
+READ2		___!*****_	READ2	__________	RRRRRRRRRR
+READ2		____!****_	READ2	__________	RRRRRRRRRR
+READ2		_____!***_	READ2	__________	RRRRRRRRRR
+READ2		______!**_	READ2	__________	RRRRRRRRRR
+READ2		_______!*_	READ2	__________	RRRRRRRRRR
+READ2		________!_	READ2	__________	RRRRRRRRRR
+
+//end
+READ2		__________	STOP	**********	SSSSSSSSSS
+
+//10+ lines
+READ0		*********#	START2B	**********	SSSLLLLLLL
+
+START2B		**********	START3B	**********	SUUSSSSSSS		// spread in l shape
+START3B		**********	START4B	**********	SUUSSSSSSS
+START4B		**********	READR	**********	SSLSSSSSSS
+
+READR		#*********	READR	*@@*******	RRSSSSSSSS		// reads each line, going right and left
+
+READR		=-********	READR	**********	RRSSSSSSSS
+READR		=_********	READR	*-********	RRSSSSSSSS
+READR		=1********	READR	**********	RRSSSSSSSS
+
+READR		|_********	READL	*1********	LLSSSSSSSS		// note above the shortest nail
+READR		|-********	READL	*1********	LLSSSSSSSS
+READR		|1********	READL	**********	LLSSSSSSSS
+READL		=*********	READL	**********	LLSSSSSSSS
+READL		#*********	READR	**********	DSDSSSSSSS		// read next line
+READR		_*********	WRITEU3	**********	USUSSSSSSS		// all lines read
+
+								// delete 1st head from top line
+WRITEU3		#********* WRITEU3	**********	USUSSSSSSS		// move up
+WRITEU3		@*********	WRITER3	**********	DSDSSSSSSS
+WRITER3		#@@*******	WRITER3	**********	RRSSSSSSSS
+WRITER3		*-********	WRITER3	**********	RRSSSSSSSS
+WRITER3		*1********	WRITEL	*-********	LLSSSSSSSS
+WRITEL		*-********	WRITEL	**********	LLSSSSSSSS
+WRITEL		#@@*******	WRITER	*_********	DSDSSSSSSS
+
+WRITER		**********	WRITED	**********	RRSSSSSSSS		// prepare to change nails
+WRITED		*-@*******	WRITED	**********	DSDSSSSSSS
+WRITED		!1@*******	WRITED	|*********	DSDSSSSSSS
+WRITED		_1@*******	WRITED	**********	DSDSSSSSSS
+
+WRITED		_-_*******	WRITEU	**********	USUSSSSSSS		// write shaft
+WRITEU		=-********	WRITEU	**********	USUSSSSSSS
+WRITEU		|-@*******	WRITEU	**********	USUSSSSSSS
+WRITEU		_-@*******	WRITEU	**********	USUSSSSSSS
+WRITEU		_1@*******	WRITEU	**********	USUSSSSSSS
+WRITEU		-*********	WRITER	_*********	DSDSSSSSSS
+
+WRITED		*1_*******	WRITEU	**********	USUSSSSSSS		// write head
+WRITEU		|1********	WRITEU	**********	USUSSSSSSS
+WRITEU		1*********	WRITER2	_*********	RRSSSSSSSS		// clean up top line
+
+WRITER2		*_********	DELETE	**********	SSDSSSSSSS		// clean up too much nail
+WRITER2		*!********	WRITED2	**********	DSDSSSSSSS
+
+WRITED2		*!@*******	WRITED2	_*********	DSDSSSSSSS
+WRITED2		_!_*******	WRITEU2	**********	USUSSSSSSS
+WRITEU2		_!@*******	WRITEU2	**********	USUSSSSSSS
+WRITEU2		!!_*******	WRITER2	_*********	RRSSSSSSSS
+
+DELETE		**@*******	DELETE	**_*******	SSDSSSSSSS		// clean up left column
+DELETE		**_*******	STOP	**********	SSSSSSSSSS
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	4		200		3963	89326
+
+HEADS AAAA		// read head, and above and to the left counting heads
+
+START	####	START	****	SULL		// spread heads
+START	#___	START	**B*	SSSU
+START	**B*	START	**_H	SSSS
+
+START	#**H	START	*@@*	RRSS		// reads each line, going right and left
+
+START	=-*H	START	****	RRSS
+START	=_*H	START	*-**	RRSS
+START	=1*H	START	****	RRSS
+
+START	|_*H	START	*1*I	LLSS		// note above the shortest nail
+START	|-*H	START	*1*I	LLSS
+START	|1*H	START	***I	LLSS
+START	=**I	START	****	LLSS
+START	#**I	START	***H	DSDS		// read next line
+START	_**H	START	***R	USUS		// all lines read
+
+											// delete 1st head from top line
+START	#**R	START	****	USUS		// move up
+START	@**R	START	***S	DSDS
+START	#@@S	START	****	RRSS
+START	*-*S	START	****	RRSS
+START	*1*S	START	*-*T	LLSS
+START	*-*T	START	****	LLSS
+START	#@@T	START	*_*M	DSDS
+
+START	***M	START	***N	RRSS		// prepare to change nails
+START	*-@N	START	****	DSDS
+START	!1@N	START	|***	DSDS
+START	_1@N	START	****	DSDS
+
+START	_-_N	START	***L	USUS		// write shaft
+START	=-*L	START	****	USUS
+START	|-@L	START	****	USUS
+START	_-@L	START	****	USUS
+START	_1@L	START	****	USUS
+START	-**L	START	_**M	DSDS
+
+START	*1_N	START	***L	USUS		// write head
+START	|1*L	START	****	USUS
+START	1**L	START	_**O	RRSS		// clean up top line
+
+START	*_*O	START	***D	SSDS		// clean up too much nail
+START	*!*O	START	***P	DSDS
+
+START	*!@P	START	_***	DSDS
+START	_!_P	START	***Q	USUS
+START	_!@Q	START	****	USUS
+START	!!QQ	START	_**O	RRSS
+
+START	**@D	START	**_*	SSDS		// clean up left column
+START	**_D	STOP	***_	SSSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	3		1400	3763	89126

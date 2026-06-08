@@ -1,5 +1,28 @@
 //=========================================================================
 
+//	6 heads
+//	heads	states	rules	steps
+//	6		300		772		1418
+
+HEADS AAABBB // 2 x 3 heads, 1 for reading input, all 3 for producing output
+
+START ****** READ ****** SUDSUD // spread heads out, go to READ state
+
+READ A**A** READ _**_** RRRLLL  // A, delete it, move all right
+READ A**B** READ _**P** RRRLLL
+READ A**C** READ _**PPP RRRLLL
+READ B**A** READ P**_** RRRLLL  // B, replace with P, move all right
+READ B**B** READ P**P** RRRLLL
+READ B**C** READ P**PPP RRRLLL
+READ C**A** READ PPP_** RRRLLL  // C, produce 3 P's, move all right
+READ C**B** READ PPPP__ RRRLLL
+READ C**C** READ PPPPPP RRRLLL
+
+READ _***** STOP ****** SSSSSS  // empty, stop
+READ P***** STOP ****** SSSSSS  // empty, stop
+
+//=========================================================================
+
 //	fewer rules
 //	heads	states	rules	steps
 //	3		200		481		2568

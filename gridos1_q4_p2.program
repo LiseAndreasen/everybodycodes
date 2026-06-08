@@ -1,5 +1,187 @@
 //=========================================================================
 
+//	10 heads
+//	heads	states	rules	steps
+//	10		1704	2332	8978
+
+(gridos1_q4_p2_10heads.php)
+
+//=========================================================================
+
+//	fewer steps, inspired by Favo02, check full column first
+//	heads	states	rules	steps
+//	1		1046	1677	26990
+
+HEADS	A
+
+START	#	READD1	*	R
+
+READD1	=	READD1	*	D		// read each column, down
+READD1	_	UP		*	R
+UP		*	READU1	*	U
+READU1	=	READU1	*	U		// and up
+READU1	_	DOWN	*	R
+DOWN	*	READD1	*	D
+
+READD1	|	READD2	*	D		// reading down, head detected
+READD2	!	READD2	*	D
+READD2	_	READU3	*	U
+READU1	|	READU2	*	U		// reading up, same
+READU2	!	READU2	*	U
+READU2	_	READD2	*	D
+
+READU3	!	READUR	|	R		// add nail
+READUR	!	READUR	_	R		// delete rest of nail
+READUR	_	READUL	*	L
+READUL	_	READUL	*	L
+READUL	|	READU3	*	U		// continue down
+READD3	!	READDR	|	R		// same, but eventually up
+READDR	!	READDR	_	R
+READDR	_	READDL	*	L
+READDL	_	READDL	*	L
+READDL	|	READD3	*	D
+
+READU3	_	STOP	*	S		// everything in place
+READD3	_	STOP	*	S
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		2999	5362	67953
+
+HEADS	A
+
+START		*	MARKTOP1A	*	U		// mark 1st top and bottom
+MARKTOP1A	*	MARKTOP2A	*	R		// A: no heads detected yet
+MARKTOP1B	*	MARKTOP2B	*	R		// B: this will be column of heads
+MARKTOP1C	*	MARKTOP2C	*	R		// C: delete column
+MARKTOP2A	*	MARKTOP3A	1	L
+MARKTOP2B	*	MARKTOP3B	2	L
+MARKTOP2C	*	MARKTOP3C	3	L
+MARKTOP3A	*	MARKTOP4A	*	D
+MARKTOP3B	*	MARKTOP4B	*	D
+MARKTOP3C	*	MARKTOP4C	*	D
+MARKTOP4A	#	MARKFIRSTD	*	D
+MARKFIRSTD	#	MARKFIRSTD	*	D
+MARKFIRSTD	_	MARKBOT2A	*	R
+MARKBOT2A	*	MARKBOT3A	1	L
+MARKBOT2B	*	MARKBOT3A	2	L
+MARKBOT2CE	*	MARKBOT3CE	3	L		// CE: column is already empty
+MARKBOT2CF	*	MARKBOT3CF	3	L		// CF: still something in this column
+MARKBOT3A	_	MARKBOT4	*	U
+MARKBOT3CE	_	MARKBOT4E	*	U
+MARKBOT3CF	_	MARKBOT4F	*	U
+MARKBOT4	#	MARKFIRSTU	*	U
+MARKFIRSTU	#	MARKFIRSTU	*	U
+
+MARKFIRSTU	_	MARKTOP1A	*	R		// mark next column top
+
+MARKTOP4A	=	DOWN1		*	D
+MARKTOP4B	=	DOWN2		*	D
+MARKTOP4C	=	DOWN3F		*	D
+MARKTOP4C	_	DOWN3E		*	D
+MARKTOP4A	|	DOWN2		*	D
+MARKTOP4B	|	DOWN2		*	D
+MARKTOP4C	|	DOWN3E		*	D
+DOWN1		=	DOWN1		*	D
+DOWN1		|	DOWN2		*	D
+DOWN2		=	DOWN2		*	D
+DOWN2		|	DOWN2		*	D
+DOWN2		_	DOWN2		*	D
+DOWN3E		=	DOWN3F		*	D		// E: column was assumed empty
+DOWN3E		|	DOWN3F		*	D		// F: column actually has stuff (full)
+DOWN3E		_	DOWN3E		*	D
+DOWN3F		=	DOWN3F		*	D
+DOWN3F		|	DOWN3F		*	D
+DOWN3F		_	DOWN3F		*	D
+
+DOWN1		1	MARKBOT2A	1	R		// mark next column bottom
+DOWN2		1	MARKBOT2B	2	R
+DOWN2		2	MARKBOT2C	2	R
+DOWN3E		2	MARKBOT2CE	3	R
+DOWN3E		3	MARKBOT2CE	*	R
+DOWN3F		2	MARKBOT2CF	3	R
+DOWN3F		3	MARKBOT2CF	*	R
+
+MARKBOT3A	1	UP1			_	U
+UP1			=	UP1			*	U
+UP1			1	MARKTOP1A	_	R
+MARKBOT3A	2	UP2			_	U
+UP2			=	UP2			|	U
+UP2			|	UP2			|	U
+UP2			1	MARKTOP1C	_	R
+MARKBOT3CE	2	UP3E		_	U
+MARKBOT3CE	3	UP3E		_	U
+MARKBOT3CF	2	UP3F		_	U
+MARKBOT3CF	3	UP3F		_	U
+UP3E		=	UP3E		_	U		// delete the column
+UP3E		|	UP3E		_	U
+UP3E		_	UP3E		_	U
+UP3E		3	CLEANUP1	_	R
+UP3F		=	UP3F		_	U
+UP3F		|	UP3F		_	U
+UP3F		_	UP3F		_	U
+UP3F		1	MARKTOP1C	_	R
+UP3F		2	MARKTOP1C	_	R
+UP3F		3	MARKTOP1C	_	R
+
+CLEANUP1	!	CLEANUP2	_	D		// cleanup of last column
+CLEANUP2	_	CLEANUP2	*	D
+CLEANUP2	!	STOP		_	D
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	4		200		3090	87340
+
+HEADS AAAA		// read head, and above and to the left counting heads
+
+START	####	START	****	SULL		// spread heads
+START	#___	START	**B*	SSSU
+START	**B*	START	**_H	SSSS
+
+START	#**H	START	*@@*	RRSS		// reads each line, going right and left
+
+START	=-*H	START	****	RRSS
+START	=_*H	START	*-**	RRSS
+START	=1*H	START	****	RRSS
+
+START	|_*H	START	*1*I	LLSS		// note above the shortest nail
+START	|-*H	START	*1*I	LLSS
+START	|1*H	START	***I	LLSS
+START	=**I	START	****	LLSS
+START	#**I	START	***H	DSDS		// read next line
+START	_**H	START	***L	USUS		// all lines read
+
+START	#**L	START	****	USUS		// prepare to change nails
+START	@**L	START	_**M	DSDS
+START	***M	START	***N	RRSS
+START	*-@N	START	=***	DSDS		// clean up top line
+START	*1@N	START	|***	DSDS
+
+START	*-_N	START	***L	USUS		// write shaft
+START	=-*L	START	****	USUS
+START	-**L	START	_**M	DSDS
+
+START	*1_N	START	***L	USUS		// write head
+START	|1*L	START	****	USUS
+START	1**L	START	_**O	RRSS
+
+START	*_*O	START	***D	SSDS		// clean up too much nail
+START	*!*O	START	***P	DSDS
+
+START	*!@P	START	_***	DSDS
+START	_!_P	START	***Q	USUS
+START	_!@Q	START	****	USUS
+START	!!QQ	START	_**O	RRSS
+
+START	**@D	START	**_D	SSDS		// clean up left column
+START	**_D	STOP	***_	SSSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	3		1100	2890	87140

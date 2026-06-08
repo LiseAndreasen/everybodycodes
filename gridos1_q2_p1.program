@@ -1,5 +1,80 @@
 //=========================================================================
 
+//	both ends
+//	heads	states	rules	steps
+//	4		300		1036	1407
+
+HEADS AABB				// read 2 adjacent places, might write
+
+START **** READ **** SRSL // spread heads
+
+						// read pair, write power symbol
+						// read non-pair, delete
+READ AAAA READ @*@* RRLL
+READ AAAB READ @*_* RRLL
+READ AABA READ @*_* RRLL
+READ AABB READ @*@* RRLL
+READ ABAA READ _*@* RRLL
+READ ABAB READ _*_* RRLL
+READ ABBA READ _*_* RRLL
+READ ABBB READ _*@* RRLL
+READ BAAA READ _*@* RRLL
+READ BAAB READ _*_* RRLL
+READ BABA READ _*_* RRLL
+READ BABB READ _*@* RRLL
+READ BBAA READ @*@* RRLL
+READ BBAB READ @*_* RRLL
+READ BBBA READ @*_* RRLL
+READ BBBB READ @*@* RRLL
+
+READ ____ STOP **** SSSS
+READ ___! STOP **** SSSS
+READ _!__ STOP **** SSSS
+READ _!_! STOP **** SSSS
+READ !_!_ STOP _*** SSSS
+READ !_!@ STOP _*** SSSS
+READ !@!_ STOP _*** SSSS
+READ !@!@ STOP _*** SSSS
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		396		578		2527
+
+HEADS	A
+
+START	A	READA	_	R
+START	B	READB	_	R
+
+READA	A	READA	@	R
+READA	B	READB	_	R
+READB	A	READA	_	R
+READB	B	READB	@	R
+
+READA	_	STOP	_	S
+READB	_	STOP	_	S
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	3		200		578		2527
+
+HEADS	AAA					// read 2 adjacent places, might write
+
+START	!!!	START	***	SRL	// spread heads
+
+START	AA_	START	@*_	RRS	// read pair, write power symbol
+START	BB_	START	@*_	RRS
+
+START	AB_	START	_*_	RRS	// read non-pair, delete
+START	BA_	START	_*_	RRS
+
+START	*__	STOP	_*_	SSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	2		300		578		2527

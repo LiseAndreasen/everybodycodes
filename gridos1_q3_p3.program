@@ -1,5 +1,164 @@
 //=========================================================================
 
+//	fewer steps - skip a lot of empty space
+//	heads	states	rules	steps
+//	5		563		1974	24828
+
+HEADS	AAAAB
+
+//	123		5
+//	 4
+
+START	*****	READ1	*****	LSRDR
+
+READ1	_#_**	STOP	*****	SSSSS	// very short line
+
+READ1	_!!**	READ1	*****	RRRRS	// beginning of line
+READ1	~==**	READ1	*~*~D	RRRRS	// pond gets deeper
+READ1	~=#*D	READ2	*~**_	DDDDS	// go down, pond might be deeper
+READ1	##***	READ1	*****	RRRRS	// pond does not get deeper
+READ1	~=#*_	READ1	*~***	RRRRS
+READ1	#=***	READ1	*~***	RRRRS
+READ1	~~~**	READ1	*****	RRRRS
+READ1	~~#**	READ1	*****	RRRRS
+READ1	~#!**	READ1	*****	RRRRS
+
+READ2	~__**	READ2	*****	LLLLS	// making pond even deeper, left
+READ2	~~_**	READ2	*****	LLLLS
+READ2	~~~**	READ2	***~D	LLLLS
+READ2	_~_**	READ4	****_	UUUUS	// done
+READ2	_~~*_	READ4	****_	UUUUS
+READ2	_~~*D	READ3	****_	DDDDS	// turn
+
+READ3	__~**	READ3	*****	RRRRS	// making pond even deeper, right
+READ3	_~~**	READ3	*****	RRRRS
+READ3	~~~**	READ3	***~D	RRRRS
+READ3	_~_**	READ4	****_	UUUUS
+READ3	~~_*_	READ4	****_	UUUUS
+READ3	~~_*D	READ2	****_	DDDDS
+
+READ4	!****	READ4	*****	UUUUS
+READ4	_****	READ1	*****	DDDDS
+
+READ1	##_**	STOP	*****	SSSSS
+READ1	~#_**	STOP	*****	SSSSS
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		1107	1560	94160
+
+HEADS	A
+
+START	#	RIGHT	*	R
+RIGHT	#	RIGHT	*	R
+RIGHT	=	ONE		~	R		// 1 wave
+ONE		=	TWO		~	R		// 2 waves
+ONE		#	RIGHT	*	R
+TWO		=	THREE	*	L		// 3 waves
+TWO		#	RIGHT	*	R
+
+THREE	~	SEVEN	*	D
+SEVEN	*	EIGHT	~	L		// 1 new wave below
+EIGHT	~	NINE	*	L		// 2 waves
+EIGHT	_	FIVE	*	R
+NINE	~	TEN		*	R		// 3 waves
+NINE	_	SIX		*	R
+TEN		*	SEVEN	*	D
+
+THREE	_	FIVE	*	R		// stop making waves
+FIVE	~	SIX		*	U
+SIX		~	FIVE	*	R
+FIVE	=	TWO		~	R
+
+RIGHT	_	STOP	*	S
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	6		200		2710	56953
+
+HEADS AAAAAB							// last head to keep track of last line
+										// 1st head for state
+
+// 123    5
+//  4
+
+START !!!!!! START ****** ULSRDR		// spread heads
+START _***** START R***** SSSSSS		// READ state
+
+START R_!_** STOP  _***** SSSSSS		// very short line
+START R_!!** START R***** SRRRRS		// beginning of line
+
+START R~==** START R*~*~D SRRRRS		// deeper pond
+START R~=#** START R*~*#* SRRRRS		// not deeper pond
+START R#==** START R*~*#* SRRRRS
+START R#=#** START R*~*#* SRRRRS
+START R!#!** START R***#* SRRRRS		// not pond
+
+										// 2: READ2
+START R!!_*D START 2****_ SDDDDS		// end of line
+										// 4: READ4
+START R!!_*_ START 4***** SDDDDS		// next line is last line
+
+START 2_#_** STOP  _*_*** SSSSSS		// very short line
+START 2___** STOP  _***** SSSSSS
+START 2!__** START 2***** SLLLLS		// beginning of even line
+START 2!#_** START 2***** SLLLLS
+ 
+START 2~~~** START 2***~D SLLLLS		// deeper pond
+START 2~~#** START 2**_#* SLLLLS		// not deeper pond
+START 2#~~** START 2***#* SLLLLS
+START 2#~#** START 2**_#* SLLLLS
+START 2!##** START 2**_#* SLLLLS		// not pond
+START 2!#~** START 2***#* SLLLLS
+
+										// 3: READ3
+START 2_##*D START 3*__*_ SDDDDS		// end of even line
+START 2_#~*D START 3*_**_ SDDDDS
+START 2_~**D START 3****_ SDDDDS
+										// 5: READ5
+START 2_##*_ START 5*__** SDDDDS		// next line is last line
+START 2_#~*_ START 5*_*** SDDDDS
+START 2_~**_ START 5***** SDDDDS
+
+START 3_#_** STOP  _*_*** SSSSSS		// very short line
+START 3___** STOP  _***** SSSSSS
+START 3__!** START 3***** SRRRRS		// beginning of odd line
+START 3_#!** START 3***** SRRRRS
+
+START 3~~~** START 3***~D SRRRRS		// deeper pond
+START 3~~#** START 3***#* SRRRRS		// not deeper pond
+START 3#~~** START 3_**#* SRRRRS
+START 3#~#** START 3_**#* SRRRRS
+START 3##!** START 3_**#* SRRRRS		// not pond
+START 3~#!** START 3***#* SRRRRS
+
+START 3##_*D START 2__**_ SDDDDS		// end of odd line
+START 3~#_*D START 2*_**_ SDDDDS
+START 3*~_*D START 2****_ SDDDDS
+START 3##_*_ START 4__*** SDDDDS		// next line is last line
+START 3~#_*_ START 4*_*** SDDDDS
+START 3*~_*_ START 4***** SDDDDS
+
+START 4___** STOP  _***** SSSSSS
+START 4#__** START 4***** SLLLLS		// last line, even
+START 4_#_** STOP  _*_*** SSSSSS
+START 4##_** START 4***** SLLLLS
+START 4###** START 4**_** SLLLLS
+START 4_##** STOP  ____** SSSSSS
+
+START 5___** STOP  _***** SSSSSS
+START 5__#** START 5***** SRRRRS		// last line, odd
+START 5_#_** STOP  _*_*** SSSSSS
+START 5_##** START 5***** SRRRRS
+START 5###** START 5_**** SRRRRS
+START 5##_** STOP  ___*** SSSSSS
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	5		573		2610	56853
@@ -77,7 +236,8 @@ READ5 ##_** STOP  __*** SSSSS
 
 //=========================================================================
 
+//	pre basic
 //	heads	states	rules	steps
 //	4		496		2314	112036
 
-//	with 4 heads, code not preserved, similar to 5 head version
+//	code not preserved, similar to 5 head version

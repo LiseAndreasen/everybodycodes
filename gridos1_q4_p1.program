@@ -1,8 +1,46 @@
 //=========================================================================
 
+//	the brilliant one :-D heavily inspired by Favo02
+//	heads	states	rules	steps
+//	3		400		441		1000
+
+HEADS	AAA
+
+START	***		START2	***		SRR
+START2	***		DOWN	***		SSR
+
+DOWN	#=!		DOWN	_#*		DDD
+DOWN	#|_		DOWN	_#|		DDD
+DOWN	___		STOP	***		DDD
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	2		200		1082	14214
+
+HEADS AA
+
+START	##	START	**	SU
+START	#_	START	*1	RS
+START	#S	START	*1	RS
+START	|1	START	*D	LS
+START	*D	START	*S	DS
+
+START	=1	START	*2	RS
+START	=2	START	*2	RS
+START	|2	START	_B	LS
+START	=B	START	|L	LS
+START	=L	START	*L	LS
+START	#L	START	*S	DS
+
+START	_S	STOP	*_	SS
+
+//=========================================================================
+
 //	basic / 1 head
 //	heads	states	rules	steps
-//	1		700		941		14773
+//	1		641		882		14114
 
 HEADS A
 
@@ -10,11 +48,11 @@ START	#	RIGHT1	*	R
 RIGHT1	|	DOWN	*	L
 DOWN	*	START	*	D
 
-RIGHT1	=	RIGHT2	*	R
+RIGHT1	=	RIGHT2	*	R		// read right
 RIGHT2	=	RIGHT2	*	R
-RIGHT2	|	BAM		_	L
-BAM		=	LEFT	|	L
-LEFT	=	LEFT	*	L
-LEFT	#	DOWN	*	S
+RIGHT2	|	BAM		_	L		// hammer nail
+BAM		=	LEFT	|	L		// new position for head
+LEFT	=	LEFT	*	L		// go back left
+LEFT	#	START	*	D
 
 START	_	STOP	*	S

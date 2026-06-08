@@ -1,5 +1,119 @@
 //=========================================================================
 
+//	7 heads, less movement, fewer steps
+//	heads	states	rules	steps
+//	7		400		1051	4474
+
+HEADS AAAAAAA
+
+// 12345
+//   6
+//   7
+
+START  ******* START2 ******* LLSRRDD		// spread heads
+START2 ******* READ   ******* LSSSRSD
+
+READ __!__** STOP ******* SSSSSSS		// very short line
+READ _!!_*** STOP ******* SSSSSSS
+READ _###_** STOP ******* SSSSSSS
+READ _#=#_** STOP **~**** SSSSSSS
+READ __!!*** READ ******* RRRRRRR		// beginning of line
+READ _!#!!** READ ******* RRRRRRR
+READ _!=!!** READ **~**** RRRRRRR
+
+READ ~~===** READ **~**~~ RRRRRRR		// deeper pond
+READ ~~==#** READ **~**~* RRRRRRR
+READ ~~=#!** READ **~**** RRRRRRR
+READ #~===** READ **~**~* RRRRRRR
+READ #~==#** READ **~**~* RRRRRRR
+READ #~=#!** READ **~**** RRRRRRR
+READ !#=!!** READ **~**** RRRRRRR
+READ !!#!!** READ ******* RRRRRRR		// not pond
+
+READ !!#*_** STOP ******* SSSSSSS
+READ !!=*_** STOP **~**** SSSSSSS
+
+//=========================================================================
+
+//	2 states
+//	heads	states	rules	steps
+//	5		200		1447	8844
+
+HEADS AAAAA							// 1st head is state
+
+// 123
+//  4
+
+START  !!!!! START ***** ULSRD		// spread heads
+START  _**** START R**** SSSSS		// R: READ
+
+START R_!_* STOP  _**** SSSSS		// very short line
+START R_!!* START ***** SRRRR		// beginning of line
+
+START R~==* START **~*~ SRRRR		// deeper pond
+START R~=#* START **~*# SRRRR		// not deeper pond
+START R#==* START **~*# SRRRR
+START R#=#* START **~*# SRRRR
+START R!#!* START ****# SRRRR		// not pond
+
+START R!!_* START E**** SDDDD		// end of line
+									// E: READ2
+
+START E_#_* STOP  _*_** SSSSS		// very short line
+START E___* STOP  _**** SSSSS
+START E!__* START ***** SLLLL		// beginning of 2nd line
+START E!#_* START **_** SLLLL
+ 
+START E~~~* START ****~ SLLLL		// deeper pond
+START E~~_* START ***** SLLLL		// not deeper pond
+START E#~~* START ***** SLLLL
+START E#~_* START ***** SLLLL
+START E!#!* START **_** SLLLL		// not pond
+
+START E_#!* STOP  _*_** SSSSS		// end of 2nd line
+START E_~** STOP  _**** SSSSS 
+
+//=========================================================================
+
+//	1 head
+//	heads	states	rules	steps
+//	1		1419	1997	21192
+
+HEADS A
+
+START  * INIT1  * D
+INIT1  * READ1  A U		// mark beginning of line 2
+READ1  # READ1  * R
+READ1  = ONER   ~ R		// ONE-FOUR: make a little square and come back 
+READ1  ~ ONER   * R		// this is the going-right version
+ONER   = TWOR   ~ R
+ONER   ~ TWOR   * R
+TWOR   = THREER * D		// only change this wave the 2nd time, less rules
+THREER * FOURR  * L		// 3 waves together detected, add 1 below
+FOURR  * READ1  ~ U
+
+ONER   # READ1  * R
+TWOR   # READ1  * R
+
+READ1  _ INIT2  * L
+INIT2  * INIT3  * D
+INIT3  A STOP   _ S
+INIT3  _ READ2  * L
+
+READ2  _ READ2  * L
+READ2  ~ ONEL   * L
+ONEL   ~ TWOL   * L
+TWOL   ~ THREEL * D
+THREEL * FOURL  * R
+FOURL  * READ2  ~ U
+
+ONEL   _ READ2  * L
+TWOL   _ READ2  * L
+
+READ2  A STOP   _ S
+
+//=========================================================================
+
 //	basic
 //	heads	states	rules	steps
 //	4		399		1347	8744
