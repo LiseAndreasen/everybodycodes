@@ -16,7 +16,7 @@ READ1	_#_**	STOP	*****	SSSSS	// very short line
 READ1	_!!**	READ1	*****	RRRRS	// beginning of line
 READ1	~==**	READ1	*~*~D	RRRRS	// pond gets deeper
 READ1	~=#*D	READ2	*~**_	DDDDS	// go down, pond might be deeper
-READ1	##***	READ1	*****	RRRRS	// pond does not get deeper
+READ1	##!**	READ1	*****	RRRRS	// pond does not get deeper
 READ1	~=#*_	READ1	*~***	RRRRS
 READ1	#=***	READ1	*~***	RRRRS
 READ1	~~~**	READ1	*****	RRRRS
