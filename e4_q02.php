@@ -4,6 +4,7 @@
 // constants
 
 $quest = "02";
+$dirs = [[-1, 0], [0, -1], [0, 1], [1, 0]];
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -35,12 +36,12 @@ $data = get_input($input);
 
 $visited = [];
 [$x, $y] = $data["START"];
-$visited[$x][$y] = true;
+$visited[$x][$y] = "X";
 foreach ($data["MOVES"] as $move) {
     [$bx, $by] = $data[$move];
     $x = floor(($x + $bx) / 2);
     $y = floor(($y + $by) / 2);
-    $visited[$x][$y] = true;
+    $visited[$x][$y] = "X";
 }
 
 $visited_flat = array_merge(...$visited);
@@ -50,10 +51,35 @@ printf("Result 1: %d\n", sizeof($visited_flat));
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e4_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e4_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+$visited = [];
+[$x, $y] = $data["START"];
+$visited[$x][$y] = "X";
+foreach ($dirs as $d) {
+    [$dx, $dy] = $d;
+    $visited[$x+$dx][$y+$dy] = "F";
+}
+foreach ($data["MOVES"] as $move) {
+    [$bx, $by] = $data[$move];
+    $x = floor(($x + $bx) / 2);
+    $y = floor(($y + $by) / 2);
+    $visited[$x][$y] = "X";
+    foreach ($dirs as $d) {
+        [$dx, $dy] = $d;
+        if(!isset($visited[$x+$dx][$y+$dy])) {
+            $visited[$x+$dx][$y+$dy] = "F";
+        }
+    }
+}
+
+$visited_flat = implode("", array_merge(...$visited));
+$counts = count_chars($visited_flat);
+$hash_value = ord("F");
+
+printf("Result 2: %d\n", $counts[$hash_value]);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
