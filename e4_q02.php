@@ -5,6 +5,8 @@
 
 $quest = "02";
 $dirs = [[-1, 0], [0, -1], [0, 1], [1, 0]];
+$illuminated = "X";
+$firefly = "F";
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -28,27 +30,27 @@ function get_input($input) {
 }
 
 function illuminate($data, $part) {
-    global $dirs;
+    global $dirs, $illuminated, $firefly;
     
     $visited = [];
     [$x, $y] = $data["START"];
-    $visited[$x][$y] = "X";
+    $visited[$x][$y] = $illuminated;
     if(1 < $part) {
         foreach ($dirs as $d) {
             [$dx, $dy] = $d;
-            $visited[$x+$dx][$y+$dy] = "F";
+            $visited[$x+$dx][$y+$dy] = $firefly;
         }
     }
     foreach ($data["MOVES"] as $move) {
         [$bx, $by] = $data[$move];
         $x = floor(($x + $bx) / 2);
         $y = floor(($y + $by) / 2);
-        $visited[$x][$y] = "X";
+        $visited[$x][$y] = $illuminated;
         if(1 < $part) {
             foreach ($dirs as $d) {
                 [$dx, $dy] = $d;
                 if(!isset($visited[$x+$dx][$y+$dy])) {
-                    $visited[$x+$dx][$y+$dy] = "F";
+                    $visited[$x+$dx][$y+$dy] = $firefly;
                 }
             }
         }
@@ -57,9 +59,9 @@ function illuminate($data, $part) {
     $visited_flat = implode("", array_merge(...$visited));
     $counts = count_chars($visited_flat);
     if($part == 1) {
-        $hash_value = ord("X");
+        $hash_value = ord($illuminated);
     } else {
-        $hash_value = ord("F");
+        $hash_value = ord($firefly);
     }
     
     return $counts[$hash_value];
