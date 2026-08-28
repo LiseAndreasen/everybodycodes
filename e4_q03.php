@@ -26,6 +26,19 @@ function get_input($input) {
 	return $data;
 }
 
+function print_map($map) {
+    foreach($map[0] as $j => $cell) {
+        foreach($map as $i => $col) {
+            echo $map[$i][$j];
+        }
+        echo "\n";
+    }
+    for($i=0;$i<sizeof($map);$i++) {
+        echo "=";
+    }
+    echo "\n";
+}
+
 function construct_up_and_left($width, $height, $horizontal_offsets,
 $horizontal_offsets_size, $vertical_offsets, $vertical_offsets_size) {
     $up = [];
@@ -80,6 +93,46 @@ function count_surrounded1($height, $width, $up, $left) {
     return $surrounded;
 }
 
+function count_surrounded2($height, $width, $up, $left) {
+    $grid = [];
+    $grid_color = 0;            // flips between 0 and 1
+    $grid[0][0] = $grid_color;
+    
+    // color the 1st row
+    $row = 0;
+    for($column=1;$column<$width;$column++) {
+        if($left[$row][$column]) {
+            $grid_color = 1 - $grid_color;
+        }
+        $grid[$row][$column] = $grid_color;
+    }
+    
+    // color the rest of each column
+    for($column=0;$column<$width;$column++) {
+        $grid_color = $grid[0][$column];
+        for($row=1;$row<$height;$row++) {
+            if($up[$row][$column]) {
+                $grid_color = 1 - $grid_color;
+            }
+            $grid[$row][$column] = $grid_color;
+        }
+    }
+    
+    $surrounded[0] = 0;
+    $surrounded[1] = 0;
+    for($row=0;$row<$height;$row++) {
+        for($column=0;$column<$width;$column++) {
+            if($up[$row][$column] && $up[$row+1][$column]
+                && $left[$row][$column] && $left[$row][$column+1]) {
+                    $grid_color = $grid[$row][$column];
+                    $surrounded[$grid_color]++;
+                }
+        }
+    }
+    
+    return max($surrounded);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -111,10 +164,22 @@ printf("Result 1: %d\n", $surrounded);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e4_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e4_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+$width = $data["width"];
+$height = $data["height"];
+$horizontal_offsets = $data["horizontal-offsets"];
+$horizontal_offsets_size = sizeof($horizontal_offsets);
+$vertical_offsets = $data["vertical-offsets"];
+$vertical_offsets_size = sizeof($vertical_offsets);
+
+[$up, $left] = construct_up_and_left($width, $height, $horizontal_offsets,
+    $horizontal_offsets_size, $vertical_offsets, $vertical_offsets_size);
+
+$largest_surrounded = count_surrounded2($height, $width, $up, $left);
+
+printf("Result 2: %d\n", $largest_surrounded);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
