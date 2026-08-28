@@ -26,6 +26,60 @@ function get_input($input) {
 	return $data;
 }
 
+function construct_up_and_left($width, $height, $horizontal_offsets,
+$horizontal_offsets_size, $vertical_offsets, $vertical_offsets_size) {
+    $up = [];
+    $left= [];
+    
+    // do the up array
+    for($row=0;$row<=$height;$row++) {
+        // find the correct hor. offset
+        $offset_no = $row % $horizontal_offsets_size;
+        $offset = $horizontal_offsets[$offset_no];
+        for($column=0;$column<$width;$column+=2) {
+            if($offset == 0) {
+                $up[$row][$column] = true;
+                $up[$row][$column+1] = false;
+            } else {
+                $up[$row][$column] = false;
+                $up[$row][$column+1] = true;
+            }
+        }
+    }
+    
+    // do the left array
+    for($column=0;$column<=$width;$column++) {
+        // find the correct ver. offset
+        $offset_no = $column % $vertical_offsets_size;
+        $offset = $vertical_offsets[$offset_no];
+        for($row=0;$row<$height;$row+=2) {
+            if($offset == 0) {
+                $left[$row][$column] = true;
+                $left[$row+1][$column] = false;
+            } else {
+                $left[$row][$column] = false;
+                $left[$row+1][$column] = true;
+            }
+        }
+    }
+    
+    return [$up, $left];
+}
+
+function count_surrounded1($height, $width, $up, $left) {
+    $surrounded = 0;
+    for($row=0;$row<$height;$row++) {
+        for($column=0;$column<$width;$column++) {
+            if($up[$row][$column] && $up[$row+1][$column]
+                && $left[$row][$column] && $left[$row][$column+1]) {
+                    $surrounded++;
+                }
+        }
+    }
+    
+    return $surrounded;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -47,51 +101,10 @@ $horizontal_offsets_size = sizeof($horizontal_offsets);
 $vertical_offsets = $data["vertical-offsets"];
 $vertical_offsets_size = sizeof($vertical_offsets);
 
-$up = [];
-$left= [];
+[$up, $left] = construct_up_and_left($width, $height, $horizontal_offsets,
+    $horizontal_offsets_size, $vertical_offsets, $vertical_offsets_size);
 
-// do the up array
-for($row=0;$row<=$height;$row++) {
-    // find the correct hor. offset
-    $offset_no = $row % $horizontal_offsets_size;
-    $offset = $horizontal_offsets[$offset_no];
-    for($column=0;$column<$width;$column+=2) {
-        if($offset == 0) {
-            $up[$row][$column] = true;
-            $up[$row][$column+1] = false;
-        } else {
-            $up[$row][$column] = false;
-            $up[$row][$column+1] = true;
-        }
-    }
-}
-
-// do the left array
-for($column=0;$column<=$width;$column++) {
-    // find the correct ver. offset
-    $offset_no = $column % $vertical_offsets_size;
-    $offset = $vertical_offsets[$offset_no];
-    for($row=0;$row<$height;$row+=2) {
-        if($offset == 0) {
-            $left[$row][$column] = true;
-            $left[$row+1][$column] = false;
-        } else {
-            $left[$row][$column] = false;
-            $left[$row+1][$column] = true;
-        }
-    }
-}
-
-// count surrounded tiles
-$surrounded = 0;
-for($row=0;$row<$height;$row++) {
-    for($column=0;$column<$width;$column++) {
-        if($up[$row][$column] && $up[$row+1][$column]
-        && $left[$row][$column] && $left[$row][$column+1]) {
-            $surrounded++;
-        }
-    }
-}
+$surrounded = count_surrounded1($height, $width, $up, $left);
 
 printf("Result 1: %d\n", $surrounded);
 
