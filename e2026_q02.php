@@ -18,8 +18,7 @@ function get_input($input) {
 			// convert csv to array
 			$pairs = explode(" ", $line);
 			foreach($pairs as $p => $pair) {
-				$pair_arr = str_split($pair);
-				[$p0, $p1, $p2] = $pair_arr;
+				[$p0, $p1, $p2] = str_split($pair);
 				if($p1 == ">") {
 					$pairs[$p] = $p2 . "<" . $p0;
 				}
@@ -45,7 +44,7 @@ function cmp($a, $b) {
 	}
 }
 
-function e26q02_sort($list, $pairs) {
+function incomplete_sort($list, $pairs) {
 	global $pairs_order;
 	
 	// analyze order
@@ -54,8 +53,7 @@ function e26q02_sort($list, $pairs) {
 	$alloys[0] = array_fill(1, $alloys_sz, 0);
 	$alloys[1] = array_fill(1, $alloys_sz, 0);
 	foreach($pairs as $pair) {
-		$pair_arr = str_split($pair);
-		[$p0, $p1, $p2] = $pair_arr;
+		[$p0, $p1, $p2] = str_split($pair);
 		$alloys[0][$p0]++;
 		$alloys[1][$p2]++;
 	}
@@ -70,6 +68,7 @@ function e26q02_sort($list, $pairs) {
 	}
 	[$candidate0, $candidate1] = $undef_alloys;
 	// the softest candidate will have a high value for the soft alloy count
+	// add this pair to the list of pairs
 	if($alloys[0][$candidate1] < $alloys[0][$candidate0]) {
 		$pairs[] = $candidate0 . "<" . $candidate1;
 	} else {
@@ -133,7 +132,7 @@ foreach($data as $p => $pairs) {
 	$list = range(1, $sz);
 	
 	// sort
-	$list = e26q02_sort($list, $pairs);
+	$list = incomplete_sort($list, $pairs);
 	
 	// reverse order
 	$list = array_reverse($list);
@@ -161,8 +160,7 @@ foreach($data as $pairs) {
 	$nodes = [];
 	$edges = [];
 	foreach($pairs as $pair) {
-		$pair_arr = str_split($pair);
-		[$p0, $p1, $p2] = $pair_arr;
+		[$p0, $p1, $p2] = str_split($pair);
 		$nodes[$p0] = $p0;
 		$nodes[$p2] = $p2;
 		$edges[] = [$p0, $p2];
