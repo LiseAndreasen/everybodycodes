@@ -22,6 +22,24 @@ function get_input($input) {
 	return $data;
 }
 
+function convert($iso, $vote) {
+	$vote_num = 0;
+	$vote1 = array_reverse(str_split($iso));
+	$vote2 = array_reverse(str_split($vote));
+	// if vote1 is too short, repeat it
+	while(sizeof($vote1) < sizeof($vote2)) {
+		foreach($vote1 as $v) {
+			$vote1[] = $v;
+		}
+	}
+	$sz = sizeof($vote2);
+	// systematically build the vote number in decimal
+	for($v=0;$v<$sz;$v++) {
+		$vote_num += $vote2[$v] * pow($vote1[$v], $v);
+	}
+	return $vote_num;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -31,14 +49,7 @@ $data = get_input($input);
 
 $vote_sum = 0;
 foreach($data as $vote) {
-	$vote_num = 0;
-	$vote1 = array_reverse(str_split($vote[0]));
-	$vote2 = array_reverse(str_split($vote[1]));
-	$sz = sizeof($vote1);
-	// systematically build the vote number in decimal
-	for($v=0;$v<$sz;$v++) {
-		$vote_num += $vote2[$v] * pow($vote1[$v], $v);
-	}
+	$vote_num = convert($vote[0], $vote[1]);
 	$vote_sum += $vote_num;
 }
 
@@ -53,20 +64,7 @@ $data = get_input($input);
 
 $vote_sum = 0;
 foreach($data as $vote) {
-	$vote_num = 0;
-	$vote1 = array_reverse(str_split($vote[0]));
-	$vote2 = array_reverse(str_split($vote[1]));
-	// if vote1 is too short, repeat it
-	while(sizeof($vote1) < sizeof($vote2)) {
-		foreach($vote1 as $v) {
-			$vote1[] = $v;
-		}
-	}
-	$sz = sizeof($vote2);
-	// systematically build the vote number in decimal
-	for($v=0;$v<$sz;$v++) {
-		$vote_num += $vote2[$v] * pow($vote1[$v], $v);
-	}
+	$vote_num = convert($vote[0], $vote[1]);
 	$vote_sum += $vote_num;
 }
 
@@ -81,20 +79,7 @@ $data = get_input($input);
 
 $vote_sum = 0;
 foreach($data as $vote) {
-	$vote_num = 0;
-	$vote1 = array_reverse(str_split($vote[0]));
-	$vote2 = array_reverse(str_split($vote[1]));
-	// if vote1 is too short, repeat it
-	while(sizeof($vote1) < sizeof($vote2)) {
-		foreach($vote1 as $v) {
-			$vote1[] = $v;
-		}
-	}
-	$sz = sizeof($vote2);
-	// systematically build the vote number in decimal
-	for($v=0;$v<$sz;$v++) {
-		$vote_num += $vote2[$v] * pow($vote1[$v], $v);
-	}
+	$vote_num = convert($vote[0], $vote[1]);
 	
 	// is it possible to reach this vote_num with a smaller vote2?
 	
