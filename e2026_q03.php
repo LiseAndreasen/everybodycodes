@@ -73,19 +73,31 @@ printf("Result 2: %d\n", $vote_sum);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
 $input = file_get_contents($file3, true);
 $data = get_input($input);
 
 $vote_sum = 0;
-foreach($data as $vote) {
+foreach($data as $vno => $vote) {
+	if($vno % 10 == 0) {
+		print(".");				// progress
+	}
 	$vote_num = convert($vote[0], $vote[1]);
 	
-	// is it possible to reach this vote_num with a smaller vote2?
+	// is it possible to reach this vote_num with a smaller vote?
+	// if yes, don't add this vote_num to the sum
+	// brute force, but as all involved numbers are < 100000, it's okay
+	for($v=1;$v<$vote[1];$v++) {
+		$vote_num2 = convert($vote[0], $v);
+		if($vote_num2 == $vote_num) {
+			$vote_num = 0;
+			break;
+		}
+	}
 	
 	$vote_sum += $vote_num;
 }
 
-printf("Result 3: %d\n", $vote_sum);
+printf("\nResult 3: %d\n", $vote_sum);
 
 ?>
