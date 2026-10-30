@@ -28,7 +28,7 @@ function get_input($input) {
 }
 
 // sort according to own rule
-function cmp($a, $b) {
+function cmp2($a, $b) {
 	$comp1 = $b["part"] - $a["part"];
 	$comp2 = $b["time"] - $a["time"];
 	switch(true) {
@@ -50,6 +50,21 @@ function cmp($a, $b) {
 					return 0;
 					break;
 			}
+			break;
+	}
+}
+
+function cmp3($a, $b) {
+	$comp = $b["time"] - $a["time"];
+	switch(true) {
+		case $comp < 0:
+			return 1;
+			break;
+		case 0 < $comp:
+			return -1;
+			break;
+		case $comp == 0;
+			return 0;
 			break;
 	}
 }
@@ -108,7 +123,7 @@ foreach($data as $line) {
 }
 
 // sort on parts 1st, times second
-usort($times, "cmp");
+usort($times, "cmp2");
 // reverse order
 $times = array_reverse($times);
 
@@ -124,9 +139,99 @@ printf("Result 2: %d\n", $checksum);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+// sort data by quest and part
+$times = [];
+foreach($data as $line) {
+	$quest = $line["quest"];
+	$part = $line["part"];
+	$id = $line["id"];
+	$time = $line["time"];
+	$times[$quest][$part][$id]["id"] = $id;
+	$times[$quest][$part][$id]["time"] = $time;
+}
+
+// sort times to make sure the quests come in the correct order
+ksort($times);
+
+// sort times to make sure the parts come in the correct order
+foreach($times as $q => $quest) {
+	ksort($times[$q]);
+}
+
+// for part 2 and 3, add previous times in
+foreach($times as $q => $quest) {
+	foreach($quest as $p => $part) {
+		if($p == 1) {
+			continue;
+		}
+		foreach($part as $t => $id_time) {
+			$id = $id_time["id"];
+			$time = $id_time["time"];
+			$times[$q][$p][$t]["time"] += $times[$q][$p-1][$t]["time"];
+		}
+	}
+}
+
+// sort each quest-part by time
+foreach($times as $q => $quest) {
+	foreach($quest as $p => $part) {
+		usort($times[$q][$p], "cmp3");
+	}
+}
+
+// add up points for each id
+$points = [];
+foreach($times as $q => $quest) {
+	foreach($quest as $p => $part) {
+		$po = $p * 50;
+		$prev_time = 0;			// there was no previous for the 1st time
+		foreach($part as $id_time) {
+			$id = $id_time["id"];
+			$time = $id_time["time"];
+			if($prev_time == 0) {
+				$this_po = $po;
+			} else {
+				if($time == $prev_time) {
+					$this_po = $prev_po;
+				} else {
+					$this_po = $po;
+				}
+			}
+			if(isset($points[$id])) {
+				$points[$id] += $this_po;
+			} else {
+				$points[$id] = $this_po;
+			}
+			$prev_time = $time;
+			$prev_po = $this_po;
+			if(0 < $po) {
+				$po--;
+			}
+		}
+	}
+}
+
+// sort points
+rsort($points);
+
+// calculate checksum
+$i = 1;
+$prev_i = 1;		// in case of ties
+$prev_po = 0;		// check for tie
+$checksum = 0;
+foreach($points as $p) {
+	if($p != $prev_po) {
+		$prev_i = $i;
+	}
+	$checksum += $prev_i * $p;
+	$prev_po = $p;
+	$i++;
+}
+
+printf("Result 3: %d\n", $checksum);
 
 ?>
