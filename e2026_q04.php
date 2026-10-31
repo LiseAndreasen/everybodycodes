@@ -122,7 +122,7 @@ foreach($data as $line) {
 	}
 }
 
-// sort on parts 1st, times second
+// sort on parts 1st, times 2nd
 usort($times, "cmp2");
 // reverse order
 $times = array_reverse($times);
