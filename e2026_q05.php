@@ -6,6 +6,8 @@
 $quest = "05";
 $turn_into_land = 5;
 $turn_into_sand = 5;
+$turn_into_tree1 = 20;		// 5x5 - 1 middle - 4 corners
+$turn_into_tree2 = 4;
 $land = "#";
 $land_or_dark = "#1";
 $land_marker = "#";
@@ -16,6 +18,12 @@ $water_width = 1;
 $sand = "=";
 $sand_marker = "=";
 $sand_width = 1;
+$land_or_tree = "#@";
+$tree = "@";
+$tree_marker = "@";
+$tree_width1 = 2;
+$tree_width2 = 1;
+$growth_steps = 2;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -90,6 +98,10 @@ function count_neigh($x, $y, $map, $good, $w) {
 			if($i == $x && $j == $y) {
 				continue;
 			}
+			// don't count the corners
+			if(abs($x-$i) == 2 && abs($y-$j) == 2) {
+				continue;
+			}
 			if(in_array($map[$i][$j], $good_arr)) {
 				$neighs++;
 			}
@@ -108,9 +120,14 @@ function grow_land($map) {
 
 	$map[$x][$y] = $land_marker;
 
+	$p = 0;
 	// assume map will always change a little
 	$map_changed = true;
 	while($map_changed) {
+		if($p % 10 == 0) {
+			print("L");					// progress
+		}
+		$p++;
 		$new_map = $map;
 		$map_changed = false;
 		for($i=0;$i<$width;$i++) {
@@ -138,6 +155,7 @@ function grow_sand($map) {
 		$water, $water_marker, $sand, $sand_marker, $turn_into_sand,
 		$water_width, $sand_width;
 
+	$p = 0;
 	// change into water
 	for($i=0;$i<$width;$i++) {
 		for($j=0;$j<$height;$j++) {
@@ -163,6 +181,10 @@ function grow_sand($map) {
 	// assume map will always change a little
 	$map_changed = true;
 	while($map_changed) {
+		if($p % 10 == 0) {
+			print("S");					// progress
+		}
+		$p++;
 		$new_map = $map;
 		$map_changed = false;
 		for($i=0;$i<$width;$i++) {
@@ -179,6 +201,43 @@ function grow_sand($map) {
 		}
 		$map = $new_map;
 	}
+	return $map;
+}
+
+function grow_trees($map) {
+	global $width, $height, $land_marker, $tree_width1, $land_or_tree,
+		$tree_marker, $turn_into_tree1, $growth_steps, $tree_width2, $tree,
+		$turn_into_tree2, $sand;
+
+	$tw = $tree_width1;
+	for($i=0+$tw;$i<$width-$tw;$i++) {
+		for($j=0+$tw;$j<$height-$tw;$j++) {
+			if($map[$i][$j] == $land_marker) {
+				$lands = count_neigh($i, $j, $map, $land_or_tree, $tree_width1);
+				if($lands == $turn_into_tree1) {
+					$map[$i][$j] = $tree_marker;
+				}
+			}
+		}
+	}
+
+	for($gs=0;$gs<$growth_steps;$gs++) {
+		$new_map = $map;
+		for($i=0;$i<$width;$i++) {
+			for($j=0;$j<$height;$j++) {
+				if($map[$i][$j] != $land_marker) {
+					continue;
+				}
+				$trees_enough = count_neigh($i, $j, $map, $tree, $tree_width2);
+				$no_sand = count_neigh($i, $j, $map, $sand, $tree_width2);
+				if($turn_into_tree2 <= $trees_enough && 0 == $no_sand) {
+					$new_map[$i][$j] = $tree_marker;
+				}
+			}
+		}
+		$map = $new_map;
+	}
+
 	return $map;
 }
 
@@ -201,7 +260,7 @@ $data2 = array_merge(...$data);
 $data3 = array_count_values($data2);
 $no = $data3[$land_marker];
 
-printf("Result 1: %d\n", $no);
+printf("\nResult 1: %d\n", $no);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
@@ -229,14 +288,36 @@ $data2 = array_merge(...$data);
 $data3 = array_count_values($data2);
 $no = $data3[$sand_marker];
 
-printf("Result 2: %d\n", $no);
+printf("\nResult 2: %d\n", $no);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$data = pivot($data);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+
+$data = grow_land($data);
+
+$data = fillup($data);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+
+$data = grow_sand($data);
+
+$data = grow_trees($data);
+
+// count occurrences in 2d array
+$data2 = array_merge(...$data);
+$data3 = array_count_values($data2);
+$no = $data3[$tree_marker];
+
+printf("\nResult 3: %d\n", $no);
 
 ?>
