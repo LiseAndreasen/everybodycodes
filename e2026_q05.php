@@ -1,0 +1,238 @@
+<?php
+
+///////////////////////////////////////////////////////////////////////////
+// constants
+
+$quest = "05";
+$turn_into_land = 5;
+$turn_into_sand = 5;
+$land = "#";
+$land_or_dark = "#1";
+$land_marker = "#";
+$water = ".";
+$water_marker = ".";
+$sand = "=";
+$sand_marker = "=";
+
+///////////////////////////////////////////////////////////////////////////
+// functions
+
+function get_input($input) {
+	// absorb input file, line by line
+	foreach(preg_split("/((\r?\n)|(\r\n?))/", $input) as $line) {
+		//print("$line\n");
+		if(strlen($line)>2) {
+			// convert string to array
+			$data[] = str_split($line);
+		}
+	}
+	return $data;
+}
+
+// change (y, x) map to (x, y) map
+function pivot($map) {
+	$map_height = sizeof($map);
+	$map_width = sizeof($map[0]);
+	for($j=0;$j<$map_height;$j++) {
+		for($i=0;$i<$map_width;$i++) {
+			$map2[$i][$j] = $map[$j][$i];
+		}
+	}
+	return $map2;
+}
+
+function print_map($map) {
+	foreach($map[0] as $j => $cell) {
+		foreach($map as $i => $col) {
+			echo $map[$i][$j];
+		}
+		echo "\n";
+	}
+	for($i=0;$i<sizeof($map);$i++) {
+		echo "=";
+	}
+	echo "\n";
+}
+
+// add extra space around the map
+function fillup($map) {
+	global $width, $height, $water_marker;
+	for($i=-1;$i<=$width;$i++) {
+		$map[$i][-1] = $water_marker;
+		$map[$i][$height] = $water_marker;
+	}
+	for($j=-1;$j<=$height;$j++) {
+		$map[-1][$j] = $water_marker;
+		$map[$width][$j] = $water_marker;
+	}
+	// sort
+	ksort($map);
+	foreach($map as $m => $line) {
+		ksort($map[$m]);
+	}
+	// reindex
+	$map = array_values($map);
+	$map = array_map("array_values", $map);
+	return $map;
+}
+
+// count neighbors in the good list
+function count_neigh($x, $y, $map, $good) {
+	global $width, $height;
+	$neighs = 0;
+	$good_arr = str_split($good);
+	for($i=max(0, $x-1);$i<=min($x+1, $width-1);$i++) {
+		for($j=max(0, $y-1);$j<=min($y+1, $height-1);$j++) {
+			// don't look at mid cell
+			if($i == $x && $j == $y) {
+				continue;
+			}
+			if(in_array($map[$i][$j], $good_arr)) {
+				$neighs++;
+			}
+		}
+	}
+	return $neighs;
+}
+
+function grow_land($map) {
+	global $width, $height,
+		$land_marker, $land, $land_or_dark, $turn_into_land;
+
+	// find middle cell
+	$x = ($width - 1) / 2;
+	$y = ($height - 1) / 2;
+
+	$map[$x][$y] = $land_marker;
+
+	// assume map will always change a little
+	$map_changed = true;
+	while($map_changed) {
+		$new_map = $map;
+		$map_changed = false;
+		for($i=0;$i<$width;$i++) {
+			for($j=0;$j<$height;$j++) {
+				if($map[$i][$j] == $land_marker) {
+					continue;
+				}
+				$land_locked = count_neigh($i, $j, $map, $land);
+				if(1 <= $land_locked) {
+					$neighs = count_neigh($i, $j, $map, $land_or_dark);
+					if($turn_into_land <= $neighs) {
+						$new_map[$i][$j] = $land_marker;
+						$map_changed = true;
+					}
+				}
+			}
+		}
+		$map = $new_map;
+	}
+	return $map;
+}
+
+function grow_sand($map) {
+	global $width, $height, $land_marker,
+		$water, $water_marker, $sand, $sand_marker, $turn_into_sand;
+
+	// change into water
+	for($i=0;$i<$width;$i++) {
+		for($j=0;$j<$height;$j++) {
+			if($map[$i][$j] != $land_marker) {
+				$map[$i][$j] = $water_marker;
+			}
+		}
+	}
+	
+	// change edges into sand
+	for($i=0;$i<$width;$i++) {
+		for($j=0;$j<$height;$j++) {
+			if($map[$i][$j] == $water_marker) {
+				continue;
+			}
+			$edge = count_neigh($i, $j, $map, $water);
+			if(1 <= $edge) {
+				$map[$i][$j] = $sand_marker;
+			}
+		}
+	}
+
+	// assume map will always change a little
+	$map_changed = true;
+	while($map_changed) {
+		$new_map = $map;
+		$map_changed = false;
+		for($i=0;$i<$width;$i++) {
+			for($j=0;$j<$height;$j++) {
+				if($map[$i][$j] == $sand_marker) {
+					continue;
+				}
+				$sand_locked = count_neigh($i, $j, $map, $sand);
+				if($turn_into_sand <= $sand_locked) {
+					$new_map[$i][$j] = $sand_marker;
+					$map_changed = true;
+				}
+			}
+		}
+		$map = $new_map;
+	}
+	return $map;
+}
+
+///////////////////////////////////////////////////////////////////////////
+// main program, part 1
+
+$file1 = './everybody_codes_e2026_q' . $quest . '_p1.txt';
+$input = file_get_contents($file1, true);
+$data = get_input($input);
+
+$data = pivot($data);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+
+$data = grow_land($data);
+
+// count occurrences in 2d array
+$data2 = array_merge(...$data);
+$data3 = array_count_values($data2);
+$no = $data3[$land_marker];
+
+printf("Result 1: %d\n", $no);
+
+///////////////////////////////////////////////////////////////////////////
+// main program, part 2
+
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+$data = pivot($data);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+
+$data = grow_land($data);
+
+$data = fillup($data);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+
+$data = grow_sand($data);
+
+// count occurrences in 2d array
+$data2 = array_merge(...$data);
+$data3 = array_count_values($data2);
+$no = $data3[$sand_marker];
+
+printf("Result 2: %d\n", $no);
+
+///////////////////////////////////////////////////////////////////////////
+// main program, part 3
+
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
+//$input = file_get_contents($file3, true);
+//$data = get_input($input);
+//printf("Result 3: %d\n", $hits);
+
+?>
