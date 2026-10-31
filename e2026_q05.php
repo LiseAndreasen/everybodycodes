@@ -9,10 +9,13 @@ $turn_into_sand = 5;
 $land = "#";
 $land_or_dark = "#1";
 $land_marker = "#";
+$land_width = 1;
 $water = ".";
 $water_marker = ".";
+$water_width = 1;
 $sand = "=";
 $sand_marker = "=";
+$sand_width = 1;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -77,12 +80,12 @@ function fillup($map) {
 }
 
 // count neighbors in the good list
-function count_neigh($x, $y, $map, $good) {
+function count_neigh($x, $y, $map, $good, $w) {
 	global $width, $height;
 	$neighs = 0;
 	$good_arr = str_split($good);
-	for($i=max(0, $x-1);$i<=min($x+1, $width-1);$i++) {
-		for($j=max(0, $y-1);$j<=min($y+1, $height-1);$j++) {
+	for($i=max(0, $x-$w);$i<=min($x+$w, $width-1);$i++) {
+		for($j=max(0, $y-$w);$j<=min($y+$w, $height-1);$j++) {
 			// don't look at mid cell
 			if($i == $x && $j == $y) {
 				continue;
@@ -97,7 +100,7 @@ function count_neigh($x, $y, $map, $good) {
 
 function grow_land($map) {
 	global $width, $height,
-		$land_marker, $land, $land_or_dark, $turn_into_land;
+		$land_marker, $land, $land_or_dark, $turn_into_land, $land_width;
 
 	// find middle cell
 	$x = ($width - 1) / 2;
@@ -115,9 +118,9 @@ function grow_land($map) {
 				if($map[$i][$j] == $land_marker) {
 					continue;
 				}
-				$land_locked = count_neigh($i, $j, $map, $land);
+				$land_locked = count_neigh($i, $j, $map, $land, $land_width);
 				if(1 <= $land_locked) {
-					$neighs = count_neigh($i, $j, $map, $land_or_dark);
+					$neighs = count_neigh($i, $j, $map, $land_or_dark, $land_width);
 					if($turn_into_land <= $neighs) {
 						$new_map[$i][$j] = $land_marker;
 						$map_changed = true;
@@ -132,7 +135,8 @@ function grow_land($map) {
 
 function grow_sand($map) {
 	global $width, $height, $land_marker,
-		$water, $water_marker, $sand, $sand_marker, $turn_into_sand;
+		$water, $water_marker, $sand, $sand_marker, $turn_into_sand,
+		$water_width, $sand_width;
 
 	// change into water
 	for($i=0;$i<$width;$i++) {
@@ -149,7 +153,7 @@ function grow_sand($map) {
 			if($map[$i][$j] == $water_marker) {
 				continue;
 			}
-			$edge = count_neigh($i, $j, $map, $water);
+			$edge = count_neigh($i, $j, $map, $water, $water_width);
 			if(1 <= $edge) {
 				$map[$i][$j] = $sand_marker;
 			}
@@ -166,7 +170,7 @@ function grow_sand($map) {
 				if($map[$i][$j] == $sand_marker) {
 					continue;
 				}
-				$sand_locked = count_neigh($i, $j, $map, $sand);
+				$sand_locked = count_neigh($i, $j, $map, $sand, $sand_width);
 				if($turn_into_sand <= $sand_locked) {
 					$new_map[$i][$j] = $sand_marker;
 					$map_changed = true;
