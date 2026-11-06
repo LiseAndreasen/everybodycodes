@@ -54,6 +54,18 @@ function size_of_plant($plant, $part) {
 	return $size;
 }
 
+function analyze_plant($plant) {
+	global $LENGTHPOS;
+	$length = 0;
+	foreach($plant as $branch) {
+		$l = $branch[$LENGTHPOS];
+		if($length < $l) {
+			$length = $l;
+		}
+	}
+	return $length;
+}
+
 function grow_plants($data, $part) {
 	global $ROOT, $LENGTHPOS, $CHILDRENPOS, $NEW_BRANCH_LENGTH;
 	
@@ -69,14 +81,20 @@ function grow_plants($data, $part) {
 		$plant_id_counter = 0;
 		$seconds = 0;
 		while($size < $limit) {
-			$seconds++;
+			$jump_size = 1;
+			if(1 < $part) {
+				// how much can the branches grow in size, and only trigger 1 round of new branches?
+				$longest_branch = analyze_plant($plant);
+				$jump_size = $growth - $longest_branch;
+			}
 			if($size == 0) {
 				// this is the 1st round
+				$jump_size = 1;
 				$plant[$plant_id_counter] = [$plant_id_counter, $NEW_BRANCH_LENGTH, $ROOT, []];
 				$plant_id_counter++;
 			} else {
 				foreach($plant as $pid => $branch) {
-					$plant[$pid][$LENGTHPOS]++;
+					$plant[$pid][$LENGTHPOS] += $jump_size;
 					if($plant[$pid][$LENGTHPOS] == $growth) {
 						// split branch around branching point, 2 branches added
 						// 1: 1st half of old branch
@@ -92,6 +110,7 @@ function grow_plants($data, $part) {
 					}
 				}
 			}
+			$seconds += $jump_size;
 			$size = size_of_plant($plant, $part);
 		}
 		$seconds_sum += $seconds;
