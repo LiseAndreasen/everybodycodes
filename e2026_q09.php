@@ -118,6 +118,105 @@ function grow_plants($data, $part) {
 	return $seconds_sum;
 }
 
+function grow_plants3($data) {
+	// we only care about branches
+	// branches turn into longer branches or several shorter branches
+	$seconds_sum = 0;
+	foreach($data as $seed) {
+		print("S");
+		[$id, $growth, $limit] = $seed;
+		$length_new = ($growth - 1 ) / 2;
+		// key = length of branch, value = number of branches
+		$leaves = [];
+		$leaves[0] = 0;
+		$internal_branches = [];
+		$internal_branches[0] = 0;
+		$size = 0;
+		$seconds = 0;
+		while($size < $limit) {
+			if($size == 0) {
+				// this is the first round
+				$jump_size = 1;
+				$leaves[1] = 1;
+			} else {
+				$longest_branch = max(max(array_keys($leaves)), max(array_keys($internal_branches)));
+				$jump_size = $growth - $longest_branch;
+				$leaves_new = [];
+				$leaves_new[0] = 0;
+				$internal_branches_new = [];
+				$internal_branches_new[0] = 0;
+				foreach($leaves as $l => $branches) {
+					if($l == 0) {
+						continue;
+					}
+					$l_new = $l + $jump_size;
+					if($l_new < $growth) {
+						// record all these branches as longer
+						if(isset($leaves_new[$l_new])) {
+							$leaves_new[$l_new] += $branches;
+						} else {
+							$leaves_new[$l_new] = $branches;
+						}
+					} else {
+						// split branches in 2
+						// 1 half will be new internal branch
+						if(isset($internal_branches_new[$length_new])) {
+							$internal_branches_new[$length_new] += $branches;
+						} else {
+							$internal_branches_new[$length_new] = $branches;
+						}
+						// 1 half will be shorter leave
+						if(isset($leaves_new[$length_new])) {
+							$leaves_new[$length_new] += $branches;
+						} else {
+							$leaves_new[$length_new] = $branches;
+						}
+						// and add new leave
+						if(isset($leaves_new[1])) {
+							$leaves_new[1] += $branches;
+						} else {
+							$leaves_new[1] = $branches;
+						}
+					}
+				}
+				foreach($internal_branches as $l => $branches) {
+					if($l == 0) {
+						continue;
+					}
+					$l_new = $l + $jump_size;
+					if($l_new < $growth) {
+						// record all these branches as longer
+						if(isset($internal_branches_new[$l_new])) {
+							$internal_branches_new[$l_new] += $branches;
+						} else {
+							$internal_branches_new[$l_new] = $branches;
+						}
+					} else {
+						// split branches in 2 new internal branches
+						if(isset($internal_branches_new[$length_new])) {
+							$internal_branches_new[$length_new] += $branches * 2;
+						} else {
+							$internal_branches_new[$length_new] = $branches * 2;
+						}
+						// and add new leave
+						if(isset($leaves_new[1])) {
+							$leaves_new[1] += $branches;
+						} else {
+							$leaves_new[1] = $branches;
+						}
+					}
+				}
+				$leaves = $leaves_new;
+				$internal_branches = $internal_branches_new;
+			}
+			$size = array_sum($leaves);
+			$seconds += $jump_size;
+		}
+		$seconds_sum += $seconds;
+	}
+	return $seconds_sum;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -145,9 +244,12 @@ printf("\nResult 2: %d\n", $seconds_sum);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$seconds_sum = grow_plants3($data);
+
+printf("\nResult 3: %d\n", $seconds_sum);
 
 ?>
