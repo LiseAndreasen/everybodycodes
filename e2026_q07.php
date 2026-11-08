@@ -7,6 +7,7 @@ $quest = "07";
 $ID = 0;
 $ENERGY = 1;
 $CONNECTIONS = 2;
+$BEGIN_MOST = -1;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -73,26 +74,31 @@ function energy_goes($data, $impulse) {
 	return array_sum($total_energy);
 }
 
-function energy_goes2($data, $impulse) {
-	global $CONNECTIONS;
+function energy_goes2($data, $impulse, $beginning_point) {
+	global $CONNECTIONS, $BEGIN_MOST;
 	// begin with the energy each cloud has at the beginning
 	$total_energy = [];
-	// find the cloud with the most outgoing connections
-	$i_most = -1;
-	$c_most = 0;
-	// prepare a structure for travelling pulses
-	// pulses[id] = no of pulses
-	$pulses = [];
-	foreach($data as $cloud) {
-		[$i, $e, $c] = $cloud;
-		$total_energy[$i] = $e;
-		if($c_most < $c) {
-			$i_most = $i;
-			$c_most = $c;
+	if($beginning_point == $BEGIN_MOST) {
+		// find the cloud with the most outgoing connections
+		$i_most = -1;
+		$c_most = 0;
+		// prepare a structure for travelling pulses
+		// pulses[id] = no of pulses
+		$pulses = [];
+		foreach($data as $cloud) {
+			[$i, $e, $c] = $cloud;
+			$total_energy[$i] = $e;
+			if($c_most < $c) {
+				$i_most = $i;
+				$c_most = $c;
+			}
 		}
+		$i_begin = $i_most;
+	} else {
+		$i_begin = $beginning_point;
 	}
 	// initiate 1st pulse
-	$pulses[$i_most][$impulse] = 1;
+	$pulses[$i_begin][$impulse] = 1;
 	$size = 1;
 	// let the energy propagate
 	while(0 < $size) {
@@ -148,7 +154,7 @@ $data = get_input($input);
 
 $SINGLE_IMPULSE = 10;		// 10
 
-$sum = energy_goes2($data, $SINGLE_IMPULSE);
+$sum = energy_goes2($data, $SINGLE_IMPULSE, $BEGIN_MOST);
 
 printf("Result 2: %d\n", $sum);
 
