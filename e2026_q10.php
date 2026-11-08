@@ -17,6 +17,8 @@ $XPOS = 0;
 $YPOS = 1;
 $DIRPOS = 2;
 $COLPOS = 3;
+$CYCLE_PHASE_BEGIN = 0;
+$CYCLE_PHASE_RECORD = 1;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -58,9 +60,30 @@ function print_map($map) {
 	echo "\n";
 }
 
+function store_state($ghosts, $round) {
+	global $all_states_seen;
+	
+	// ignore collisions left
+	$state_arr = [];
+	foreach($ghosts as $ghost) {
+		[$x, $y, $cell, $col] = $ghost;
+		$state_arr[] = $x . "-" . $y . "-" . $cell;
+	}
+	sort($state_arr);
+	$state = implode("*", $state_arr);
+	$pos = array_search($state, $all_states_seen);
+	if($pos !== false) {
+		return $pos;
+	} else {
+		$all_states_seen[$round] = $state;
+		return -1;
+	}
+}
+
 function walk_the_ghosts($data, $rounds, $collisions_allowed) {
 	global $NOT_GHOST, $EMPTY_SPACE, $MOVE, $MOVES,
-		$XPOS, $YPOS, $DIRPOS, $COLPOS;
+		$XPOS, $YPOS, $DIRPOS, $COLPOS, $all_states_seen,
+		$CYCLE_PHASE_BEGIN, $CYCLE_PHASE_RECORD;
 	
 	// make list of ghosts and remove them from the map
 	$ghosts = [];
@@ -73,6 +96,10 @@ function walk_the_ghosts($data, $rounds, $collisions_allowed) {
 			$data[$x][$y] = $EMPTY_SPACE;
 		}
 	}
+	store_state($ghosts, 0);
+	
+	// no cycle detected yet
+	$cycle_phase = $CYCLE_PHASE_BEGIN;
 
 	// let the ghosts walk
 	$collisions = 0;
@@ -99,6 +126,7 @@ function walk_the_ghosts($data, $rounds, $collisions_allowed) {
 				if($ghosts[$g][$COLPOS] == 0) {
 					// ghost disappears
 					unset($ghosts[$g]);
+					$cycle_phase = $CYCLE_PHASE_BEGIN;
 				} else {
 					$cells[$x][$y][] = $g;
 				}
@@ -121,6 +149,7 @@ function walk_the_ghosts($data, $rounds, $collisions_allowed) {
 						if($ghosts[$g][$COLPOS] == 0) {
 							// ghost disappears
 							unset($ghosts[$g]);
+							$cycle_phase = $CYCLE_PHASE_BEGIN;
 						}
 					}
 				}
@@ -129,10 +158,57 @@ function walk_the_ghosts($data, $rounds, $collisions_allowed) {
 		if(sizeof($ghosts) == 0) {
 			break;
 		}
+		$seen_before = store_state($ghosts, $r);
+		if($seen_before != -1) {
+			if($cycle_phase == $CYCLE_PHASE_BEGIN) {
+				$length_of_cycle = $r - $seen_before;
+				$cycle_phase = $CYCLE_PHASE_RECORD;
+				// go one more cycle to count collisions, then leap
+				$all_states_seen = [];
+				store_state($ghosts, $r);
+				$ghosts_cycle_recording = $ghosts;
+			} else {
+				$ghosts_cycle_collisions = [];
+				// calculate the collisions for each ghost during 1 cycle
+				foreach($ghosts as $g => $cell) {
+					$coll_post_cycle = $cell[$COLPOS];
+					$coll_pre_cycle = $ghosts_cycle_recording[$g][$COLPOS];
+					$ghosts_cycle_collisions[$g] =
+						$coll_pre_cycle - $coll_post_cycle;
+				}
+				// calculate the length of the leap ahead
+				// the leap should stop before a ghost will die
+				$leap = -1;
+				foreach($ghosts as $g => $cell) {
+					$coll_pre_leap = $cell[$COLPOS];
+					$coll_pr_cycle = $ghosts_cycle_collisions[$g];
+					// round down by 1 so that the leap doesn't end
+					// where a ghost would have died
+					$cycles_to_be_leaped =
+						floor($coll_pre_leap / $coll_pr_cycle - 1);
+					if($leap == -1 || $cycles_to_be_leaped < $leap) {
+						$leap = $cycles_to_be_leaped;
+					}
+				}
+				// leap
+				foreach($ghosts as $g => $cell) {
+					$ghosts[$g][$COLPOS] -=
+						$leap * $ghosts_cycle_collisions[$g];
+				}
+				$r += $length_of_cycle * $leap;
+				$all_states_seen = [];
+				$cycle_phase = $CYCLE_PHASE_BEGIN;
+			}
+		}
 	}
 	
 	return [$collisions, $r];
 }
+
+///////////////////////////////////////////////////////////////////////////
+
+// global variable needed later
+$all_states_seen = [];
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
@@ -169,9 +245,17 @@ printf("Result 2: %d\n", $rounds_used);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$data = pivot($data);
+
+$rounds = 20000000000000;			// guess too high
+$collisions_allowed = 1000000000000;
+[$collisions, $rounds_used] = walk_the_ghosts($data, $rounds,
+	$collisions_allowed);
+
+printf("Result 3: %d\n", $rounds_used);
 
 ?>
