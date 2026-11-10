@@ -74,6 +74,23 @@ function portal_strain($graph) {
 	return $sum;
 }
 
+// https://stackoverflow.com/questions/5506888/permutations-all-possible-sets-of-numbers
+// create permutations
+function pc_permute($items, $perms = array( )) {
+	global $perms1;
+    if (empty($items)) { 
+    	$perms1[] = $perms;
+    }  else {
+        for ($i = count($items) - 1; $i >= 0; --$i) {
+             $newitems = $items;
+             $newperms = $perms;
+             list($foo) = array_splice($newitems, $i, 1);
+             array_unshift($newperms, $foo);
+             pc_permute($newitems, $newperms);
+         }
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -103,6 +120,11 @@ $graph_basic = create_graph($portals, $neighbor_portals);
 $strain1 = portal_strain($graph_basic);
 $strain2_min = $strain1;
 for($i=1;$i<=$portals;$i++) {
+	print("=");			// progress
+}
+print("\n");
+for($i=1;$i<=$portals;$i++) {
+	print(".");			// progress
 	for($j=1;$j<=$portals;$j++) {
 		if($i <= $j) {
 			continue;
@@ -116,14 +138,65 @@ for($i=1;$i<=$portals;$i++) {
 		}
 	}
 }
-printf("Result 2: %d\n", $strain1 - $strain2_min);
+printf("\nResult 2: %d\n", $strain1 - $strain2_min);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+// create all permutations of the 2x4 postions
+$letters2 = str_split("01234567");
+// result of permute ends up in perms1
+$perms1 = array();
+pc_permute($letters2);
+// then sort them to get all the unique permutations
+$perms2 = [];
+foreach($perms1 as $perm) {
+	$perm_split = [];
+	for($i=0;$i<8;$i+=2) {
+		$perm_copy = $perm;
+		$perm_copy = array_slice($perm_copy, $i, 2);
+		sort($perm_copy);
+		$perm_split[] = implode("", $perm_copy);
+	}
+	sort($perm_split);
+	$perm_imploded = implode("", $perm_split);
+	$perms2[$perm_imploded] = $perm_imploded;
+}
+
+$neighbor_portals = 3;
+$portals = $data["portals"];
+$graph_basic = create_graph($portals, $neighbor_portals);
+$strain1 = portal_strain($graph_basic);
+$strain2_min = $strain1;
+for($i=1;$i<=sizeof($perms2);$i++) {
+	print("=");			// progress
+}
+print("\n");
+// permutation
+foreach($perms2 as $perm) {
+	print(".");			// progress
+	$perm_split = str_split($perm);
+	// offset
+	for($i=1;$i<=$portals/8;$i++) {
+		$shortcuts = $data["shortcuts"];
+		// combine permutation and offset
+		for($j=0;$j<8;$j+=2) {
+			$a = $perm_split[$j] * $portals / 8 + $i;
+			$b = $perm_split[$j+1] * $portals / 8 + $i;
+			$shortcuts[] = [$a, $b];
+		}
+		$graph_shortcut = add_shortcuts($graph_basic, $shortcuts);
+		$strain2 = portal_strain($graph_shortcut);
+		if($strain2 < $strain2_min) {
+			$strain2_min = $strain2;
+		}
+	}
+}
+
+printf("\nResult 3: %d\n", $strain1 - $strain2_min);
 
 ?>
