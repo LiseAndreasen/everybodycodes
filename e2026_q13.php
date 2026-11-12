@@ -10,13 +10,16 @@ $quest = "13";
 
 function get_input($input) {
 	// absorb input file, line by line
+	$counter = 0;
 	foreach(preg_split("/((\r?\n)|(\r\n?))/", $input) as $line) {
 		//print("$line\n");
 		if(strlen($line)>2) {
 			// convert csv to array
 			$data2 = explode(" ", $line);
 			$data3 = explode(":", $data2[1]);
-			$data[$data2[0]] = $data3;
+			$data[$counter][$data2[0]] = $data3;
+		} else {
+			$counter++;
 		}
 	}
 	return $data;
@@ -54,16 +57,16 @@ function detect_meetings($current, $next, $lcm) {
 			}
 			$c_j = $current[$j];
 			$n_j = $next[$j];
-			printf("Meeting occurring at %3d %3d\n.................... %3d %3d? ", $c_i, $c_j, $n_i, $n_j);
+//			printf("Meeting occurring at %3d %3d\n.................... %3d %3d? ", $c_i, $c_j, $n_i, $n_j);
 			// don't count both arms stopped here twice
 			if($c_i == $c_j) {
-				print("\n");
+//				print("\n");
 				continue;
 			}
 			// meeting at time 0
 			if($n_i % $lcm == 0 && $n_j % $lcm == 0) {
 				$meetings++;
-				print("Yes!\n");
+//				print("Yes!\n");
 				continue;
 			}
 			// 2 lines crossing, ai x + bi = y
@@ -72,18 +75,18 @@ function detect_meetings($current, $next, $lcm) {
 			if($n_i - $c_i == $n_j - $c_j) {
 				if($c_i == $c_j) {
 					$meetings++;
-					print("Yes!");
+//					print("Yes!");
 				}
-				print("\n");
+//				print("\n");
 				continue;
 			}
 			$x = ($c_j - $c_i) / (($n_i - $c_i) - ($n_j - $c_j));
 			if(0 < $x && $x <= 1) {
 				$meetings++;
-				print("Yes!\n");
+//				print("Yes!\n");
 				continue;
 			}
-			print("\n");
+//			print("\n");
 		}
 	}
 	return $meetings;
@@ -111,7 +114,7 @@ function let_the_clock_run($data) {
 	$seconds = 0;
 	$meetings = 0;
 	while($seconds <= max($data["move"])) {
-		print("Seconds: $seconds\n");
+//		print("Seconds: $seconds\n");
 		$next = [];
 		foreach($current as $i => $c) {
 			if($seconds < $data["move"][$i]) {
@@ -134,28 +137,48 @@ $file1 = './everybody_codes_e2026_q' . $quest . '_p1.txt';
 $input = file_get_contents($file1, true);
 $data = get_input($input);
 
-$meetings = let_the_clock_run($data);
+$meetings = let_the_clock_run($data[0]);
 
 printf("Result 1: %d\n", $meetings);
-
-// 34 incorrect
-// length correct
-// 3 incorrect
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2026_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+$meetings = 0;
+for($i=0;$i<sizeof($data);$i++) {
+	print("=");
+}
+print("\n");
+foreach($data as $clock) {
+	print(".");
+	$meetings += let_the_clock_run($clock);
+}
+print("\n");
+
+printf("Result 2: %d\n", $meetings);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$meetings = 0;
+for($i=0;$i<sizeof($data);$i++) {
+	print("=");
+}
+print("\n");
+foreach($data as $clock) {
+	print(".");
+//	$meetings += let_the_clock_run($clock);
+}
+print("\n");
+
+printf("Result 3: %d\n", $meetings);
 
 ?>
