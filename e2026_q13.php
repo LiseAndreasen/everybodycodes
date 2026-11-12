@@ -57,16 +57,12 @@ function detect_meetings($current, $next, $lcm) {
 			}
 			$c_j = $current[$j];
 			$n_j = $next[$j];
-//			printf("Meeting occurring at %3d %3d\n.................... %3d %3d? ", $c_i, $c_j, $n_i, $n_j);
-			// don't count both arms stopped here twice
 			if($c_i == $c_j) {
-//				print("\n");
 				continue;
 			}
 			// meeting at time 0
 			if($n_i % $lcm == 0 && $n_j % $lcm == 0) {
 				$meetings++;
-//				print("Yes!\n");
 				continue;
 			}
 			// 2 lines crossing, ai x + bi = y
@@ -75,18 +71,14 @@ function detect_meetings($current, $next, $lcm) {
 			if($n_i - $c_i == $n_j - $c_j) {
 				if($c_i == $c_j) {
 					$meetings++;
-//					print("Yes!");
 				}
-//				print("\n");
 				continue;
 			}
 			$x = ($c_j - $c_i) / (($n_i - $c_i) - ($n_j - $c_j));
 			if(0 < $x && $x <= 1) {
 				$meetings++;
-//				print("Yes!\n");
 				continue;
 			}
-//			print("\n");
 		}
 	}
 	return $meetings;
@@ -111,10 +103,33 @@ function let_the_clock_run($data) {
 	}
 
 	// let the clock run
+	$seen_before = [];
 	$seconds = 0;
 	$meetings = 0;
+	$meetings_cycle = 0;
+	$second_cycle = 0;
+	$arm_stops_now = false;
 	while($seconds <= max($data["move"])) {
-//		print("Seconds: $seconds\n");
+		// detect cycle
+		$state = implode("*", $current);
+		if(isset($seen_before[$state])) {
+			// leap ahead
+			$the_times = $data["move"];
+			sort($the_times);
+			foreach($the_times as $i => $t) {
+				if($seconds <= $t) {
+					$end_time = $t;
+					break;
+				}
+			}
+			$leap_ahead_cycles = max(floor(($end_time - $seconds) / $second_cycle - 1), 0);
+			$seconds += $leap_ahead_cycles * $second_cycle;
+			$meetings_cycle += $leap_ahead_cycles * $meetings_cycle;
+			$seen_before = [];
+		} else {
+			$seen_before[$state] = $state;
+		}
+
 		$next = [];
 		foreach($current as $i => $c) {
 			if($seconds < $data["move"][$i]) {
@@ -122,10 +137,23 @@ function let_the_clock_run($data) {
 			} else {
 				$next[] = $c;
 			}
+			if($seconds== $data["move"][$i] - 1) {
+				// one of the arms will stop now
+				$arm_stops_now = true;
+			}
 		}
-		$meetings += detect_meetings($current, $next, $lcm);
+		$meetings_cycle += detect_meetings($current, $next, $lcm);
+
 		$current = $next;
 		$seconds++;
+		$second_cycle++;
+		if($arm_stops_now) {
+			$meetings += $meetings_cycle;
+			$meetings_cycle = 0;
+			$seen_before = [];
+			$arm_stops_now = false;
+			$second_cycle = 0;
+		}
 	}
 	return $meetings;
 }
@@ -175,7 +203,7 @@ for($i=0;$i<sizeof($data);$i++) {
 print("\n");
 foreach($data as $clock) {
 	print(".");
-//	$meetings += let_the_clock_run($clock);
+	$meetings += let_the_clock_run($clock);
 }
 print("\n");
 
