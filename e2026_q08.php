@@ -6,6 +6,17 @@
 $quest = "08";
 $EMPTY = ".";
 
+// directions
+$LEFT = 0;
+$LEFTUP = 1;
+$RIGHTUP = 2;
+$RIGHT = 3;
+$RIGHTDOWN = 4;
+$LEFTDOWN = 5;
+$NO_OF_DIRECTIONS = 6;
+$HEIGHT = "H";
+$CORNERS = 0;
+
 ///////////////////////////////////////////////////////////////////////////
 // functions
 
@@ -46,6 +57,134 @@ function print_map($map) {
 	echo "\n";
 }
 
+function tree_id($x, $y) {
+	return ($x + 1) * 1000 + $y + 1;
+}
+
+function build_graph($map) {
+	global $EMPTY, $LEFT, $LEFTUP, $RIGHTUP, $RIGHT, $RIGHTDOWN, $LEFTDOWN,
+		$HEIGHT, $CORNERS;
+
+	$graph = [];
+	$w = sizeof($map);
+	$h = sizeof($map[0]);
+	for($x=0;$x<$w;$x++) {
+		for($y=0;$y<$h;$y++) {
+			if($map[$x][$y] != $EMPTY) {
+				$cell = [];
+				$cell[$HEIGHT] = $map[$x][$y];
+				$id = tree_id($x, $y);
+				// look left
+				if(isset($map[$x-2][$y]) && $map[$x-2][$y] != $EMPTY) {
+					$cell[$LEFT] = tree_id($x-2, $y);
+				}
+				// look left and up
+				if(isset($map[$x-1][$y-1]) && $map[$x-1][$y-1] != $EMPTY) {
+					$cell[$LEFTUP] = tree_id($x-1, $y-1);
+				}
+				// look right and up
+				if(isset($map[$x+1][$y-1]) && $map[$x+1][$y-1] != $EMPTY) {
+					$cell[$RIGHTUP] = tree_id($x+1, $y-1);
+				}
+				// look right
+				if(isset($map[$x+2][$y]) && $map[$x+2][$y] != $EMPTY) {
+					$cell[$RIGHT] = tree_id($x+2, $y);
+				}
+				// look right and down
+				if(isset($map[$x+1][$y+1]) && $map[$x+1][$y+1] != $EMPTY) {
+					$cell[$RIGHTDOWN] = tree_id($x+1, $y+1);
+				}
+				// look left and down
+				if(isset($map[$x-1][$y+1]) && $map[$x-1][$y+1] != $EMPTY) {
+					$cell[$LEFTDOWN] = tree_id($x-1, $y+1);
+				}
+				$graph[$id] = $cell;
+			}
+		}
+	}
+	$here = min(array_keys($graph));
+	$graph[$CORNERS][$LEFT] = $here;
+	while(isset($graph[$here][$RIGHTUP])) {
+		$here = $graph[$here][$RIGHTUP];
+	}
+	$graph[$CORNERS][$LEFTUP] = $here;
+	while(isset($graph[$here][$RIGHT])) {
+		$here = $graph[$here][$RIGHT];
+	}
+	$graph[$CORNERS][$RIGHTUP] = $here;
+	while(isset($graph[$here][$RIGHTDOWN])) {
+		$here = $graph[$here][$RIGHTDOWN];
+	}
+	$graph[$CORNERS][$RIGHT] = $here;
+	while(isset($graph[$here][$LEFTDOWN])) {
+		$here = $graph[$here][$LEFTDOWN];
+	}
+	$graph[$CORNERS][$RIGHTDOWN] = $here;
+	while(isset($graph[$here][$LEFT])) {
+		$here = $graph[$here][$LEFT];
+	}
+	$graph[$CORNERS][$LEFTDOWN] = $here;
+	return $graph;
+}
+
+function count_trees($graph, $direction) {
+	global $LEFT, $LEFTUP, $RIGHTUP, $RIGHT, $RIGHTDOWN, $LEFTDOWN, $HEIGHT,
+		$CORNERS, $NO_OF_DIRECTIONS;
+	// always move clockwise around the edge of the trees
+	$walking_direction = ($direction + 2) % $NO_OF_DIRECTIONS;
+	// and to examine shadows, move direction + 4
+	$shadow_direction = ($direction + 4) % $NO_OF_DIRECTIONS;
+	$trees_without_shadow = 0;
+	$here = $graph[$CORNERS][$direction];
+	while(true) {
+		$there = $here;
+		$shadow = 0;
+		while(true) {
+			if($shadow < $graph[$there][$HEIGHT]) {
+				$trees_without_shadow++;
+				$shadow = $graph[$there][$HEIGHT];
+			}
+			if(isset($graph[$there][$shadow_direction])) {
+				$there = $graph[$there][$shadow_direction];
+			} else {
+				break;
+			}
+			$shadow--;
+		}
+		if(isset($graph[$here][$walking_direction])) {
+			$here = $graph[$here][$walking_direction];
+		} else {
+			break;
+		}
+	}
+	// now walk along the next edge
+	$walking_direction = ($walking_direction + 1) % $NO_OF_DIRECTIONS;
+	// we already did this corner, so move to the next tree
+	$here = $graph[$here][$walking_direction];
+	while(true) {
+		$there = $here;
+		$shadow = 0;
+		while(true) {
+			if($shadow < $graph[$there][$HEIGHT]) {
+				$trees_without_shadow++;
+				$shadow = $graph[$there][$HEIGHT];
+			}
+			if(isset($graph[$there][$shadow_direction])) {
+				$there = $graph[$there][$shadow_direction];
+			} else {
+				break;
+			}
+			$shadow--;
+		}
+		if(isset($graph[$here][$walking_direction])) {
+			$here = $graph[$here][$walking_direction];
+		} else {
+			break;
+		}
+	}
+	return $trees_without_shadow;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -55,72 +194,8 @@ $data = get_input($input);
 
 $data = pivot($data);
 
-$map = $data;
-$w = sizeof($map);
-$h = sizeof($map[0]);
-// begin at middle of left edge
-// then traverse upper left edge of hexagon
-// then finally upper edge of hexagon
-$j = ($h - 1) / 2;
-for($i=0;$i<=($h-1)/2;$i++) {
-	$tree = $map[$i][$j];
-	//	print("(i,j) = ($i,$j) = $tree\n");
-	$i_next = $i;
-	$j_next = $j;
-	$shadow = $tree - 1;
-	$i_next++;
-	$j_next++;
-	while(isset($map[$i_next][$j_next])) {
-		$tree_next = $map[$i_next][$j_next];
-		if($tree_next == $EMPTY) {
-			break;
-		}
-		if($shadow < $tree_next) {
-			$shadow = $tree_next;
-		} else {
-			$map[$i_next][$j_next] = $EMPTY;
-		}
-		$shadow--;
-		$i_next++;
-		$j_next++;
-	}
-	$j--;
-}
-$j++;		// get back on map
-$i++;
-while($map[$i][$j] != $EMPTY) {
-	$tree = $map[$i][$j];
-	$i_next = $i;
-	$j_next = $j;
-	$shadow = $tree - 1;
-	$i_next++;
-	$j_next++;
-	while(isset($map[$i_next][$j_next])) {
-		$tree_next = $map[$i_next][$j_next];
-		if($tree_next == $EMPTY) {
-			break;
-		}
-		if($shadow < $tree_next) {
-			$shadow = $tree_next;
-		} else {
-			$map[$i_next][$j_next] = $EMPTY;
-		}
-		$shadow--;
-		$i_next++;
-		$j_next++;
-	}
-	$i += 2;
-}
-
-// count still alive
-$no = 0;
-foreach($map as $col) {
-	foreach($col as $cell) {
-		if($cell != $EMPTY) {
-			$no++;
-		}
-	}
-}
+$graph = build_graph($data);
+$no = count_trees($graph, $LEFT);
 
 printf("Result 1: %d\n", $no);
 
