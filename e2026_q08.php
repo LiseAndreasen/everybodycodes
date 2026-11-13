@@ -202,10 +202,20 @@ printf("Result 1: %d\n", $no);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2026_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+$data = pivot($data);
+
+$graph = build_graph($data);
+
+$sum = 0;
+for($dir=0;$dir<$NO_OF_DIRECTIONS;$dir++) {
+	$sum += count_trees($graph, $dir);
+}
+
+printf("Result 2: %d\n", $sum);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
