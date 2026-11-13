@@ -16,6 +16,13 @@ $LEFTDOWN = 5;
 $NO_OF_DIRECTIONS = 6;
 $HEIGHT = "H";
 $CORNERS = 0;
+$NO_UPDATE = false;
+$UPDATE = true;
+$TREE_BECOMES_WARRIOR = 10;
+$SEED = -3;
+$TREE_HEIGHT_MINIMUM = 1;
+$WARRIORS_REQUIRED = 100000;
+$DIR_DICT = ["SE", "SW", "W", "NW", "NE", "E"];	// test
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -127,62 +134,86 @@ function build_graph($map) {
 	return $graph;
 }
 
-function count_trees($graph, $direction) {
-	global $LEFT, $LEFTUP, $RIGHTUP, $RIGHT, $RIGHTDOWN, $LEFTDOWN, $HEIGHT,
-		$CORNERS, $NO_OF_DIRECTIONS;
+function count_trees_sub($here, $graph, $shadow_direction,
+$walking_direction, $update_yes) {
+	global $HEIGHT, $TREE_HEIGHT_MINIMUM, $TREE_BECOMES_WARRIOR, $SEED;
+
+	$trees_without_shadow = 0;
+	$energy_absorbed = 0;
+	$left_the_field = 0;
+	while(true) {
+		$there = $here;
+		$shadow = 0;
+		while(true) {
+			if($shadow < $graph[$there][$HEIGHT]) {
+				// tree absorbs energy
+				// and potentially it grows
+				// it also becomes the new shadow caster
+				$trees_without_shadow++;
+				if($TREE_HEIGHT_MINIMUM <= $graph[$there][$HEIGHT]) {
+					$energy_absorbed++;
+				}
+				$shadow = $graph[$there][$HEIGHT];
+				if($update_yes) {
+					$graph[$there][$HEIGHT]++;
+					if($graph[$there][$HEIGHT] == $TREE_BECOMES_WARRIOR) {
+						$left_the_field++;
+						$graph[$there][$HEIGHT] = $SEED;
+					}
+				}
+			}
+			if($graph[$there][$HEIGHT] < $TREE_HEIGHT_MINIMUM) {
+					$graph[$there][$HEIGHT]++;
+			}
+			if(isset($graph[$there][$shadow_direction])) {
+				$there = $graph[$there][$shadow_direction];
+			} else {
+				break;
+			}
+			$shadow--;
+		}
+		if(isset($graph[$here][$walking_direction])) {
+			$here = $graph[$here][$walking_direction];
+		} else {
+			break;
+		}
+	}
+	return [$graph, $trees_without_shadow, $energy_absorbed,
+		$left_the_field, $here];
+}
+
+function count_trees($graph, $direction, $update_yes) {
+	global $CORNERS, $NO_OF_DIRECTIONS,
+		$TREE_BECOMES_WARRIOR, $SEED, $TREE_HEIGHT_MINIMUM;
 	// always move clockwise around the edge of the trees
 	$walking_direction = ($direction + 2) % $NO_OF_DIRECTIONS;
 	// and to examine shadows, move direction + 4
 	$shadow_direction = ($direction + 4) % $NO_OF_DIRECTIONS;
 	$trees_without_shadow = 0;
+	$energy_absorbed = 0;
+	$left_the_field = 0;
 	$here = $graph[$CORNERS][$direction];
-	while(true) {
-		$there = $here;
-		$shadow = 0;
-		while(true) {
-			if($shadow < $graph[$there][$HEIGHT]) {
-				$trees_without_shadow++;
-				$shadow = $graph[$there][$HEIGHT];
-			}
-			if(isset($graph[$there][$shadow_direction])) {
-				$there = $graph[$there][$shadow_direction];
-			} else {
-				break;
-			}
-			$shadow--;
-		}
-		if(isset($graph[$here][$walking_direction])) {
-			$here = $graph[$here][$walking_direction];
-		} else {
-			break;
-		}
-	}
+
+	[$graph, $tws, $ea, $ltf, $h] = count_trees_sub($here, $graph,
+		$shadow_direction, $walking_direction, $update_yes);
+	$trees_without_shadow += $tws;
+	$energy_absorbed += $ea;
+	$left_the_field += $ltf;
+	$here = $h;
+
 	// now walk along the next edge
 	$walking_direction = ($walking_direction + 1) % $NO_OF_DIRECTIONS;
 	// we already did this corner, so move to the next tree
 	$here = $graph[$here][$walking_direction];
-	while(true) {
-		$there = $here;
-		$shadow = 0;
-		while(true) {
-			if($shadow < $graph[$there][$HEIGHT]) {
-				$trees_without_shadow++;
-				$shadow = $graph[$there][$HEIGHT];
-			}
-			if(isset($graph[$there][$shadow_direction])) {
-				$there = $graph[$there][$shadow_direction];
-			} else {
-				break;
-			}
-			$shadow--;
-		}
-		if(isset($graph[$here][$walking_direction])) {
-			$here = $graph[$here][$walking_direction];
-		} else {
-			break;
-		}
-	}
-	return $trees_without_shadow;
+
+	[$graph, $tws, $ea, $ltf, $h] = count_trees_sub($here, $graph,
+		$shadow_direction, $walking_direction, $update_yes);
+	$trees_without_shadow += $tws;
+	$energy_absorbed += $ea;
+	$left_the_field += $ltf;
+
+	return [$graph, $trees_without_shadow, $energy_absorbed,
+		$left_the_field];
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -195,7 +226,8 @@ $data = get_input($input);
 $data = pivot($data);
 
 $graph = build_graph($data);
-$no = count_trees($graph, $LEFT);
+[$graph, $no, $energy_absorbed, $left_the_field] =
+	count_trees($graph, $LEFT, $NO_UPDATE);
 
 printf("Result 1: %d\n", $no);
 
@@ -212,7 +244,9 @@ $graph = build_graph($data);
 
 $sum = 0;
 for($dir=0;$dir<$NO_OF_DIRECTIONS;$dir++) {
-	$sum += count_trees($graph, $dir);
+	[$graph, $no, $energy_absorbed, $left_the_field] =
+		count_trees($graph, $dir, $NO_UPDATE);
+	$sum += $no;
 }
 
 printf("Result 2: %d\n", $sum);
@@ -221,8 +255,31 @@ printf("Result 2: %d\n", $sum);
 // main program, part 3
 
 $file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$data = pivot($data);
+
+$graph = build_graph($data);
+
+$sum_warriors = 0;
+$sum_energy = 0;
+$dir = $LEFT;
+$round = 0;		// test
+while($sum_warriors <= $WARRIORS_REQUIRED) {
+	[$graph, $no, $energy_absorbed, $left_the_field] =
+		count_trees($graph, $dir, $UPDATE);
+	$sum_warriors += $left_the_field;
+	$sum_energy += $energy_absorbed;
+	$round++;		// test
+	if($round <= 100 || $round == 1000 || $round % 10000 == 0 ||
+	32000 <= $round) {
+		printf("%5d %4s %7d %4d %7d %7d\n", $round, $DIR_DICT[$dir],
+			$energy_absorbed, $left_the_field, $sum_warriors, $sum_energy);
+	}
+	$dir = ($dir + 1) % $NO_OF_DIRECTIONS;
+}
+
+printf("Result 3: %d\n", $sum_energy);
 
 ?>
