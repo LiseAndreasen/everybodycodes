@@ -22,7 +22,6 @@ $TREE_BECOMES_WARRIOR = 10;
 $SEED = -3;
 $TREE_HEIGHT_MINIMUM = 1;
 $WARRIORS_REQUIRED = 100000;
-$DIR_DICT = ["SE", "SW", "W", "NW", "NE", "E"];	// test
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -49,19 +48,6 @@ function pivot($map) {
 		}
 	}
 	return $map2;
-}
-
-function print_map($map) {
-	foreach($map[0] as $j => $cell) {
-		foreach($map as $i => $col) {
-			echo $map[$i][$j];
-		}
-		echo "\n";
-	}
-	for($i=0;$i<sizeof($map);$i++) {
-		echo "=";
-	}
-	echo "\n";
 }
 
 function tree_id($x, $y) {
@@ -152,8 +138,8 @@ $walking_direction, $update_yes) {
 				$trees_without_shadow++;
 				if($TREE_HEIGHT_MINIMUM <= $graph[$there][$HEIGHT]) {
 					$energy_absorbed++;
+					$shadow = $graph[$there][$HEIGHT];
 				}
-				$shadow = $graph[$there][$HEIGHT];
 				if($update_yes) {
 					$graph[$there][$HEIGHT]++;
 					if($graph[$there][$HEIGHT] == $TREE_BECOMES_WARRIOR) {
@@ -170,7 +156,9 @@ $walking_direction, $update_yes) {
 			} else {
 				break;
 			}
-			$shadow--;
+			if(0 < $shadow) {
+				$shadow--;
+			}
 		}
 		if(isset($graph[$here][$walking_direction])) {
 			$here = $graph[$here][$walking_direction];
@@ -254,7 +242,7 @@ printf("Result 2: %d\n", $sum);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
 $input = file_get_contents($file3, true);
 $data = get_input($input);
 
@@ -265,18 +253,11 @@ $graph = build_graph($data);
 $sum_warriors = 0;
 $sum_energy = 0;
 $dir = $LEFT;
-$round = 0;		// test
-while($sum_warriors <= $WARRIORS_REQUIRED) {
+while($sum_warriors < $WARRIORS_REQUIRED) {
 	[$graph, $no, $energy_absorbed, $left_the_field] =
 		count_trees($graph, $dir, $UPDATE);
 	$sum_warriors += $left_the_field;
 	$sum_energy += $energy_absorbed;
-	$round++;		// test
-	if($round <= 100 || $round == 1000 || $round % 10000 == 0 ||
-	32000 <= $round) {
-		printf("%5d %4s %7d %4d %7d %7d\n", $round, $DIR_DICT[$dir],
-			$energy_absorbed, $left_the_field, $sum_warriors, $sum_energy);
-	}
 	$dir = ($dir + 1) % $NO_OF_DIRECTIONS;
 }
 
