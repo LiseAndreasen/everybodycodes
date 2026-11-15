@@ -22,21 +22,8 @@ function get_input($input) {
 	return $data;
 }
 
-function print_map($map) {
-	foreach($map[0] as $j => $cell) {
-		foreach($map as $i => $col) {
-			echo $map[$i][$j];
-		}
-		echo "\n";
-	}
-	for($i=0;$i<sizeof($map);$i++) {
-		echo "=";
-	}
-	echo "\n";
-}
-
 /*
-###			3x2
+###			3x2 - but look for gap
 ###
 
 ^ ### ^
@@ -102,12 +89,24 @@ function destroy_block($map, $a, $b) {
 				$type = "l-shoot-left";
 			} else {
 				// rectangle
-				$type = "rectangle-solid";
+				// test whether it has gaps
+				$no_gaps = true;
+				for($a_test=$a_left+1;$a_test<$a_right;$a_test++) {
+					for($b_test=$b_top+1;$b_test<$b_left_low;$b_test++) {
+						if($map[$a_test][$b_test] != $SPELL) {
+							$no_gaps = false;
+							break 2;
+						}
+					}
+				}
+				if($no_gaps) {
+					$type = "rectangle-solid";
+				} else {
+					$type = "rectangle-gapped";
+				}
 			}
 		}
 	}
-
-//	printf("Block of type %s from %d %d to %d %d\n", $type, $a_left, $b_top, $a_right, $b_right_low);
 
 	switch($type) {
 		case "rectangle-solid":
@@ -115,15 +114,74 @@ function destroy_block($map, $a, $b) {
 			$b_span = $b_left_low - $b_top + 1;
 			if($a_span < $b_span) {
 				$spells_needed = $a_span;
-//				printf("%d spells required\n", $a_span);
 			} else {
 				$spells_needed = $b_span;
-//				printf("%d spells required\n", $b_span);
 			}
-//			printf("Rectangle with length %d and %d detected\n", $a_span, $b_span);
 
 			// delete
 			for($a_spell=$a_left;$a_spell<=$a_right;$a_spell++) {
+				for($b_spell=$b_top;$b_spell<=$b_left_low;$b_spell++) {
+					$map[$a_spell][$b_spell] = $EMPTY;
+				}
+			}
+			break;
+		case "rectangle-gapped":
+			// found 1 corner of gap
+			$a_inner_left = $a_test;
+			$b_inner_top = $b_test;
+			$a_inner_right = $a_inner_left;
+			while($map[$a_inner_right+1][$b_inner_top] != $SPELL) {
+				$a_inner_right++;
+			}
+			$b_inner_low = $b_inner_top;
+			while($map[$a_inner_left][$b_inner_low+1] != $SPELL) {
+				$b_inner_low++;
+			}
+
+			$a_span = $a_right - $a_left + 1;
+			$b_span = $b_left_low - $b_top + 1;
+			$a_span_left = $a_inner_left - $a_left;
+			$a_span_center = $a_inner_right - $a_inner_left + 1;
+			$a_span_right = $a_right - $a_inner_right;
+			$b_span_top = $b_inner_top - $b_top;
+			$b_span_center = $b_inner_low - $b_inner_top + 1;
+			$b_span_low = $b_left_low - $b_inner_low;
+			$delete = [];
+			// each side seperately
+			$delete[] = $a_span_left + $a_span_right + $b_span_top + $b_span_low;
+			// everything horizontal
+			$delete[] = $b_span + $b_span_center;
+			// everything vertical
+			$delete[] = $a_span + $a_span_center;
+			// top side horizontal, the rest vertical
+			$delete[] = $b_span_top + $a_span;
+			// low side horizontal, the rest vertical
+			$delete[] = $b_span_low + $a_span;
+			// left side vertical, the rest horizontal
+			$delete[] = $a_span_left + $b_span;
+			// right side vertical, the rest horizontal
+			$delete[] = $a_span_right + $b_span;
+
+			$delete_min = min($delete);
+			$spells_needed += $delete_min;
+
+			// delete
+			for($a_spell=$a_left;$a_spell<=$a_right;$a_spell++) {
+				for($b_spell=$b_top;$b_spell<$b_inner_top;$b_spell++) {
+					$map[$a_spell][$b_spell] = $EMPTY;
+				}
+			}
+			for($a_spell=$a_left;$a_spell<=$a_right;$a_spell++) {
+				for($b_spell=$b_inner_low+1;$b_spell<=$b_left_low;$b_spell++) {
+					$map[$a_spell][$b_spell] = $EMPTY;
+				}
+			}
+			for($a_spell=$a_left;$a_spell<$a_inner_left;$a_spell++) {
+				for($b_spell=$b_top;$b_spell<=$b_left_low;$b_spell++) {
+					$map[$a_spell][$b_spell] = $EMPTY;
+				}
+			}
+			for($a_spell=$a_inner_right+1;$a_spell<=$a_right;$a_spell++) {
 				for($b_spell=$b_top;$b_spell<=$b_left_low;$b_spell++) {
 					$map[$a_spell][$b_spell] = $EMPTY;
 				}
@@ -138,14 +196,12 @@ function destroy_block($map, $a, $b) {
 			$b_span_big = $b_left_low - $b_top + 1;
 			$a_span_small = $a_center - $a_left + 1;
 			$b_span_small = $b_right_low - $b_top + 1;
-//			printf("L with arms of length %d (%d) and %d (%d) detected\n", $a_span_big, $a_span_small, $b_span_big, $b_span_small);
 
 			// delete each arm separately?
 			$delete1 = $a_span_small + $b_span_small;
 			$delete2 = min($a_span_big, $b_span_big);
 			// delete with only 1 kind of spell?
 			$delete = min($delete1, $delete2);
-//			printf("%d spells required\n", $delete);
 
 			$spells_needed += $delete;
 
@@ -170,14 +226,12 @@ function destroy_block($map, $a, $b) {
 			$b_span_big = $b_right_low - $b_top + 1;
 			$a_span_small = $a_right - $a_center + 1;
 			$b_span_small = $b_left_low - $b_top + 1;
-//			printf("L with arms of length %d (%d) and %d (%d) detected\n", $a_span_big, $a_span_small, $b_span_big, $b_span_small);
 
 			// delete each arm separately?
 			$delete1 = $a_span_small + $b_span_small;
 			$delete2 = min($a_span_big, $b_span_big);
 			// delete with only 1 kind of spell?
 			$delete = min($delete1, $delete2);
-//			printf("%d spells required\n", $delete);
 
 			$spells_needed += $delete;
 
@@ -206,14 +260,12 @@ function destroy_block($map, $a, $b) {
 			$b_span_big = $b_left_low - $b_top + 1;
 			$a_span_small = $a_center - $a_left + 1;
 			$b_span_small = $b_right_low - $b_center + 1;
-//			printf("L with arms of length %d (%d) and %d (%d) detected\n", $a_span_big, $a_span_small, $b_span_big, $b_span_small);
 
 			// delete each arm separately?
 			$delete1 = $a_span_small + $b_span_small;
 			$delete2 = min($a_span_big, $b_span_big);
 			// delete with only 1 kind of spell?
 			$delete = min($delete1, $delete2);
-//			printf("%d spells required\n", $delete);
 
 			$spells_needed += $delete;
 
@@ -242,14 +294,12 @@ function destroy_block($map, $a, $b) {
 			$b_span_big = $b_left_low - $b_top + 1;
 			$a_span_small = $a_right - $a_center + 1;
 			$b_span_small = $b_left_low - $b_center + 1;
-//			printf("L with arms of length %d (%d) and %d (%d) detected\n", $a_span_big, $a_span_small, $b_span_big, $b_span_small);
 
 			// delete each arm separately?
 			$delete1 = $a_span_small + $b_span_small;
 			$delete2 = min($a_span_big, $b_span_big);
 			// delete with only 1 kind of spell?
 			$delete = min($delete1, $delete2);
-//			printf("%d spells required\n", $delete);
 
 			$spells_needed += $delete;
 
@@ -271,11 +321,7 @@ function destroy_block($map, $a, $b) {
 }
 
 function find_and_destroy_blocks($map) {
-	global $EMPTY, $PART;
-
-	if($PART == 3) {
-		print_map($map);
-	}
+	global $EMPTY;
 
 	$spells = 0;
 	$a_max = sizeof($map);
@@ -287,9 +333,6 @@ function find_and_destroy_blocks($map) {
 			}
 			[$map, $s] = destroy_block($map, $a, $b);
 			$spells += $s;
-			if($PART == 3) {
-				print_map($map);
-			}
 		}
 	}
 	return $spells;
@@ -301,7 +344,6 @@ function find_and_destroy_blocks($map) {
 $file1 = './everybody_codes_e2026_q' . $quest . '_p1.txt';
 $input = file_get_contents($file1, true);
 $data = get_input($input);
-$PART = 1;
 
 $spells = find_and_destroy_blocks($data);
 
@@ -313,7 +355,6 @@ printf("Result 1: %d\n", $spells);
 $file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
 $input = file_get_contents($file2, true);
 $data = get_input($input);
-$PART = 2;
 
 $spells = find_and_destroy_blocks($data);
 
@@ -322,10 +363,9 @@ printf("Result 2: %d\n", $spells);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
 $input = file_get_contents($file3, true);
 $data = get_input($input);
-$PART = 3;
 
 $spells = find_and_destroy_blocks($data);
 
