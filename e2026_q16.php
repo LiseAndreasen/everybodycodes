@@ -20,6 +20,68 @@ function get_input($input) {
 	return $data;
 }
 
+function count_flips($line) {
+	// flip
+	$begin = 0;
+	$size_of_line = sizeof($line);
+	$end = $size_of_line - 1;
+	$flips = 0;
+
+	while(true) {
+		$shade1 = $line[$begin];
+		// proceed to end of this group
+		while($begin < $size_of_line - 1 && $line[$begin+1] == $shade1) {
+			$begin++;
+		}
+		if($begin == $size_of_line - 1) {
+			// we are done
+			break;
+		}
+		// find last occurrence of this shade
+		while($shade1 != $line[$end]) {
+			$end--;
+		}
+		if($begin == $end) {
+			// this group is done
+			if($begin < $size_of_line - 1) {
+				$begin++;
+				$end = $size_of_line - 1;
+				continue;
+			} else {
+				// all flips done
+				break;
+			}
+		}
+
+		// now both begin and end point to the same shade
+		// test whether there's anything else in that interval
+		$shade_test = array_slice($line, $begin, $end - $begin + 1);
+		$counts = array_count_values($shade_test);
+		if($counts[$shade1] != sizeof($shade_test)) {
+			// move begin 1 more step
+			$begin++;
+			// flip
+			$arr1 = array_slice($line, 0, $begin);
+			$arr2 = array_slice($line, $begin, $end - $begin + 1);
+			$arr3 = array_slice($line, $end + 1);
+			$arr2 = array_reverse($arr2);
+			$line = array_merge($arr1, $arr2, $arr3);
+			$flips++;
+		} else {
+			// this group is done, move to next shade
+			while($shade1 == $line[$begin+1] && $begin < $size_of_line) {
+				$begin++;
+			}
+			if($begin == $size_of_line - 1) {
+				// all flips done
+				break;
+			}
+		}
+	}
+
+	return $flips;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 1
 
@@ -28,63 +90,7 @@ $input = file_get_contents($file1, true);
 $data = get_input($input);
 $line = $data[0];
 
-// flip
-$begin = 0;
-$size_of_line = sizeof($line);
-$end = $size_of_line - 1;
-$flips = 0;
-
-while(true) {
-	$shade1 = $line[$begin];
-	// proceed to end of this group
-	while($begin < $size_of_line - 1 && $line[$begin+1] == $shade1) {
-		$begin++;
-	}
-	if($begin == $size_of_line - 1) {
-		// we are done
-		break;
-	}
-	// find last occurrence of this shade
-	while($shade1 != $line[$end]) {
-		$end--;
-	}
-	if($begin == $end) {
-		// this group is done
-		if($begin < $size_of_line - 1) {
-			$begin++;
-			$end = $size_of_line - 1;
-			continue;
-		} else {
-			// all flips done
-			break;
-		}
-	}
-
-	// now both begin and end point to the same shade
-	// test whether there's anything else in that interval
-	$shade_test = array_slice($line, $begin, $end - $begin + 1);
-	$counts = array_count_values($shade_test);
-	if($counts[$shade1] != sizeof($shade_test)) {
-		// move begin 1 more step
-		$begin++;
-		// flip
-		$arr1 = array_slice($line, 0, $begin);
-		$arr2 = array_slice($line, $begin, $end - $begin + 1);
-		$arr3 = array_slice($line, $end + 1);
-		$arr2 = array_reverse($arr2);
-		$line = array_merge($arr1, $arr2, $arr3);
-		$flips++;
-	} else {
-		// this group is done, move to next shade
-		while($shade1 == $line[$begin+1] && $begin < $size_of_line) {
-			$begin++;
-		}
-		if($begin == $size_of_line - 1) {
-			// all flips done
-			break;
-		}
-	}
-}
+$flips = count_flips($line);
 
 printf("Result 1: %d\n", $flips);
 
