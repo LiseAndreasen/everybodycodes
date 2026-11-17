@@ -99,17 +99,38 @@ printf("Result 1: %d\n", $flips);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2026_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+$line = $data[0];
+$SHELF_REPEATS = 10;
+
+$repeated_shelf = [];
+for($l=0;$l<$SHELF_REPEATS;$l++) {
+	$repeated_shelf = array_merge($repeated_shelf, $line);
+}
+
+[$flips, $flip_lengths] = count_flips($repeated_shelf);
+
+printf("Result 2: %d\n", $flip_lengths);
+exit();
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+$line = $data[0];
+$SHELF_REPEATS = 100;
+
+$repeated_shelf = [];
+for($l=0;$l<$SHELF_REPEATS;$l++) {
+	$repeated_shelf = array_merge($repeated_shelf, $line);
+}
+
+[$flips, $flip_lengths] = count_flips($repeated_shelf);
+
+printf("Result 3: %d\n", $flip_lengths);
 
 ?>
