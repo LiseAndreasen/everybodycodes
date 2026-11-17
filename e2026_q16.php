@@ -26,6 +26,7 @@ function count_flips($line) {
 	$size_of_line = sizeof($line);
 	$end = $size_of_line - 1;
 	$flips = 0;
+	$flip_lengths = 0;
 
 	while(true) {
 		$shade1 = $line[$begin];
@@ -67,6 +68,7 @@ function count_flips($line) {
 			$arr2 = array_reverse($arr2);
 			$line = array_merge($arr1, $arr2, $arr3);
 			$flips++;
+			$flip_lengths += sizeof($arr2);
 		} else {
 			// this group is done, move to next shade
 			while($shade1 == $line[$begin+1] && $begin < $size_of_line) {
@@ -79,7 +81,7 @@ function count_flips($line) {
 		}
 	}
 
-	return $flips;
+	return [$flips, $flip_lengths];
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -90,7 +92,7 @@ $input = file_get_contents($file1, true);
 $data = get_input($input);
 $line = $data[0];
 
-$flips = count_flips($line);
+[$flips, $flip_lengths] = count_flips($line);
 
 printf("Result 1: %d\n", $flips);
 
