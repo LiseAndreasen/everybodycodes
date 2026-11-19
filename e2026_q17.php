@@ -57,17 +57,142 @@ function create_graph($map) {
 	return $graph;
 }
 
-function print_map($map) {
-	foreach($map[0] as $j => $cell) {
-		foreach($map as $i => $col) {
-			echo $map[$i][$j];
+// a crust is between something solid and a gap
+// just count all of these
+function count_crust($map) {
+	global $width, $height, $verticesCount, $SOLID, $GAP;
+
+	$crusts = 0;
+	for($i=-1;$i<$width;$i++) {
+		for($j=-1;$j<$height;$j++) {
+			// check right
+			if($map[$i][$j] != $map[$i+1][$j]) {
+				$crusts++;
+			}
+			// check down
+			if($map[$i][$j] != $map[$i][$j+1]) {
+				$crusts++;
+			}
 		}
-		echo "\n";
 	}
-	for($i=0;$i<sizeof($map);$i++) {
-		echo "=";
+	return $crusts;
+}
+
+// add extra space around the map
+function fillup($map) {
+	global $width, $height;
+	for($i=-1;$i<=$width;$i++) {
+		$map[$i][-1] = ".";
+		$map[$i][$height] = ".";
 	}
-	echo "\n";
+	for($j=-1;$j<=$height;$j++) {
+		$map[-1][$j] = ".";
+		$map[$width][$j] = ".";
+	}
+	return $map;
+}
+
+// the idea here is to fill the map and then count edges of the fill
+function flood_fill($map) {
+	global $height, $width, $GAP, $SOLID;
+
+	$LEFT_LOWER = "L";
+	$UPPER_RIGHT = "U";
+
+	// preemptively fill the corners of the map
+	$map[-1][-1] = $SOLID;
+	$map[-1][0] = $SOLID;
+	$map[0][-1] = $SOLID;
+	$map[$width][$height] = $SOLID;
+	$map[$width][$height-1] = $SOLID;
+	$map[$width-1][$height] = $SOLID;
+
+	$q = [];
+	// fill left and lower part of map
+	for($i=1;$i<$width-1;$i++) {
+		$map[$i][$height] = $LEFT_LOWER;
+		$q[] = [$i, $height];
+	}
+	for($j=1;$j<$height-1;$j++) {
+		$map[-1][$j] = $LEFT_LOWER;
+		$q[] = [-1, $j];
+	}
+	// fill more of the map
+	while(0 < sizeof($q)) {
+		[$x, $y] = array_shift($q);
+		for($i=$x-1;$i<=$x+1;$i++) {
+			for($j=$y-1;$j<=$y+1;$j++) {
+				if(!isset($map[$i][$j])) {
+					continue;
+				}
+				if($map[$i][$j] == $GAP) {
+					$map[$i][$j] = $LEFT_LOWER;
+					$q[] = [$i, $j];
+				}
+			}
+		}
+	}
+
+	// fill upper and right part of map
+	for($i=1;$i<$width-1;$i++) {
+		$map[$i][-1] = $UPPER_RIGHT;
+		$q[] = [$i, -1];
+	}
+	for($j=1;$j<$height-1;$j++) {
+		$map[$width][$j] = $UPPER_RIGHT;
+		$q[] = [$width, $j];
+	}
+	// fill more of the map
+	while(0 < sizeof($q)) {
+		[$x, $y] = array_shift($q);
+		for($i=$x-1;$i<=$x+1;$i++) {
+			for($j=$y-1;$j<=$y+1;$j++) {
+				if(!isset($map[$i][$j])) {
+					continue;
+				}
+				if($map[$i][$j] == $GAP) {
+					$map[$i][$j] = $UPPER_RIGHT;
+					$q[] = [$i, $j];
+				}
+			}
+		}
+	}
+
+	// fill close to the corners back in
+	$map[-1][0] = $LEFT_LOWER;
+	$map[0][-1] = $UPPER_RIGHT;
+	$map[$width][$height-1] = $UPPER_RIGHT;
+	$map[$width-1][$height] = $LEFT_LOWER;
+
+	// now count
+	$left_lower_count = 0;
+	$upper_right_count = 0;
+	for($i=-1;$i<$width;$i++) {
+		for($j=-1;$j<$height;$j++) {
+			// don't count the corners
+			if($i == -1 & $i == -1) {
+				continue;
+			}
+			// check right
+			if($map[$i][$j] != $map[$i+1][$j]) {
+				if($map[$i][$j] == $LEFT_LOWER || $map[$i+1][$j] == $LEFT_LOWER) {
+					$left_lower_count++;
+				} else {
+					$upper_right_count++;
+				}
+			}
+			// check down
+			if($map[$i][$j] != $map[$i][$j+1]) {
+				if($map[$i][$j] == $LEFT_LOWER || $map[$i][$j+1] == $LEFT_LOWER) {
+					$left_lower_count++;
+				} else {
+					$upper_right_count++;
+				}
+			}
+		}
+	}
+
+	return min($left_lower_count, $upper_right_count);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -93,17 +218,33 @@ printf("Result 1: %d\n", $distance[$id_end]);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2026_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+// add gaps around the map
+$data = fillup($data);
+
+$crusts = count_crust($data);
+
+printf("Result 2: %d\n", $crusts);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$width = sizeof($data);
+$height = sizeof($data[0]);
+// add gaps around the map
+$data = fillup($data);
+
+$route = flood_fill($data);
+
+printf("Result 3: %d\n", $route);
 
 ?>
