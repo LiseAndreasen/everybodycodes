@@ -52,10 +52,17 @@ function fill_and_count($data) {
 	foreach($data as $id => $d) {
 		$x = $d["x"];
 		$y = $d["y"];
+		if(isset($d["width"])) {
+			$width = $d["width"];
+		} else {
+			$width = 1;
+		}
 		$x_all[$id] = $x;
 		$y_all[$id] = $y;
-		for($j=1;$j<=$y;$j++) {
-			$grid[$x][$j] = $SOLID;
+		for($i=$x;$i<$x+$width;$i++) {
+			for($j=1;$j<=$y;$j++) {
+				$grid[$i][$j] = $SOLID;
+			}
 		}
 	}
 	// fill in the rest of the grid, first with empty space
@@ -109,10 +116,13 @@ printf("Result 1: %d\n", $all_filled_space);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2026_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+$all_filled_space = fill_and_count($data);
+
+printf("Result 2: %d\n", $all_filled_space);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
