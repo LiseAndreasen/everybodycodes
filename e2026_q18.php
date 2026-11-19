@@ -41,15 +41,10 @@ function print_map($map) {
 }
 
 function fill_and_count($data) {
-	$SOLID = "#";
-	$EMPTY = ".";
-	$EXTRA = "=";
-
-	$grid = [];
+	// these will keep track of the upper corners
 	$x_all = [];
 	$y_all = [];
-	// fill in stacks
-	foreach($data as $id => $d) {
+	foreach($data as $d) {
 		$x = $d["x"];
 		$y = $d["y"];
 		if(isset($d["width"])) {
@@ -57,49 +52,63 @@ function fill_and_count($data) {
 		} else {
 			$width = 1;
 		}
-		$x_all[$id] = $x;
-		$y_all[$id] = $y;
-		for($i=$x;$i<$x+$width;$i++) {
-			for($j=1;$j<=$y;$j++) {
-				$grid[$i][$j] = $SOLID;
-			}
+		// corner 1
+		$x_all[] = $x;
+		$y_all[] = $y;
+		// corner 2
+		if(1 < $width) {
+			$x_all[] = $x + $width - 1;
+			$y_all[] = $y;
 		}
 	}
-	// fill in the rest of the grid, first with empty space
-	$x_min = min($x_all);
-	$x_max = max($x_all);
-	$y_min = 1;
-	$y_max = max($y_all);
-	for($i=$x_min;$i<=$x_max;$i++) {
-		for($j=$y_min;$j<=$y_max;$j++) {
-			if(!isset($grid[$i][$j])) {
-				$grid[$i][$j] = $EMPTY;
-			}
-		}
-	}
-	// then fill in between the stacks
-	for($j=$y_min;$j<=$y_max;$j++) {
-		$x_left = $x_min;
-		$x_right = $x_max;
-		while($grid[$x_left][$j] != $SOLID) {
-			$x_left++;
-		}
-		while($grid[$x_right][$j] != $SOLID) {
-			$x_right--;
-		}
-		for($i=$x_left;$i<=$x_right;$i++) {
-			if($grid[$i][$j] != $SOLID) {
-				$grid[$i][$j] = $EXTRA;
-			}
-		}
-	}
-	// count filled squares
-	$string = implode("", array_merge(...$grid));
-	$counts = count_chars($string);
-	$hash_value = ord($EMPTY);
-	$all_filled_space = array_sum($counts) - $counts[$hash_value];
 
-	return $all_filled_space;
+	// the key will keep rising on either side
+	// getting higher and higher
+	// until the bit with the maximum height
+	$y_max = max($y_all);
+	$sum = 0;
+	// handle left part, where y rises
+	$id = 0;
+	$x_left = $x_all[$id];
+	$y_left = $y_all[$id];
+	while($y_left < $y_max) {
+		$id++;
+		$x_next = $x_all[$id];
+		$y_next = $y_all[$id];
+		if($y_next < $y_left) {
+			// ignore this corner
+			continue;
+		}
+		// add the rectangle between
+		// x_left, 1
+		// x_next - 1, y_left
+		$sum += ($x_next - $x_left) * $y_left;
+		$x_left = $x_next;
+		$y_left = $y_next;
+	}
+	// then handle right bit
+	$id = sizeof($x_all) - 1;
+	$x_right = $x_all[$id];
+	$y_right = $y_all[$id];
+	while($y_right < $y_max) {
+		$id--;
+		$x_next = $x_all[$id];
+		$y_next = $y_all[$id];
+		if($y_next < $y_right) {
+			// ignore this corner
+			continue;
+		}
+		// add the rectangle between
+		// x_right, 1
+		// x_next + 1, y_right
+		$sum += ($x_right - $x_next) * $y_right;
+		$x_right = $x_next;
+		$y_right = $y_next;
+	}
+	// finally do the middle bit
+	$sum += ($x_right - $x_left + 1) * $y_max;
+
+	return $sum;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -127,9 +136,12 @@ printf("Result 2: %d\n", $all_filled_space);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
-//printf("Result 3: %d\n", $hits);
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+$all_filled_space = fill_and_count($data);
+
+printf("Result 3: %d\n", $all_filled_space);
 
 ?>
