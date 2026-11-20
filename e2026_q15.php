@@ -47,6 +47,8 @@ $file1 = './everybody_codes_e2026_q' . $quest . '_p1.txt';
 $input = file_get_contents($file1, true);
 $lines = get_input($input);
 
+echo "The time is " . date("h:i:sa" . "\n");
+
 // this next bit heavily based on
 // https://github.com/pf981/advent-of-code-and-friends/blob/23f07717ca165380af2f7ec486d7280ca55de700/everybody-codes/2026/15_1.py
 
@@ -66,13 +68,21 @@ $seen = [];
 // array of distance, row/column, previous row/column, seen sulphur
 $heap = [[0, $start[0], $start[1], -1, -1, []]];
 $old_d = 0;
-while(0 < sizeof($heap)) {
+// progress
+for($i=0;$i<80;$i++) {
+	print("=");
+}
+print("\n");
+while(true) {
 	[$d, $r, $c, $prev_r, $prev_c, $collected] = array_shift($heap);
-	if(in_array([$r, $c, $prev_r, $prev_c, $collected], $seen)) {
+	$collected_flat = implode("*", array_merge(...$collected));
+	$seen_id = sprintf("%d-%d-%d-%d-%s", $r, $c, $prev_r, $prev_c,
+		$collected_flat);
+	if(isset($seen[$seen_id])) {
 		// this configuration already seen
 		continue;
 	}
-	$seen[] = [$r, $c, $prev_r, $prev_c, $collected];
+	$seen[$seen_id] = true;
 
 	if($lines[$r][$c] == $END and sizeof($collected) == sizeof($to_collect)) {
 		// the solution!
@@ -114,14 +124,16 @@ while(0 < sizeof($heap)) {
 	// progress
 	$new_d = $heap[0][0];
 	if($old_d != $new_d) {
-		sort($heap);
 		$old_d = $new_d;
-		printf("%3d ", $new_d);
-		if($new_d % 10 == 0) {
+		printf(".", $new_d);
+		if($new_d % 80 == 0) {
 			print("\n");
 		}
 	}
 }
+print("\n");		// progress
+
+echo "The time is " . date("h:i:sa" . "\n");
 
 printf("\n\nResult 1: %d\n", $d);
 
