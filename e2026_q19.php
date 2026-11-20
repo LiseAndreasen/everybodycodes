@@ -149,9 +149,57 @@ printf("Result 2: %d\n", $maximum);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
 
-$file3 = './everybody_codes_e2026_q' . $quest . '_p3_ex1.txt';
-//$input = file_get_contents($file3, true);
-//$data = get_input($input);
+print("\n");
+
+$file3 = './everybody_codes_e2026_q' . $quest . '_p3.txt';
+$input = file_get_contents($file3, true);
+$data = get_input($input);
+
+// analyze input
+$arr2 = array_merge(...$data[0]);
+$arr3 = array_count_values($arr2);
+
+$no_of_black_in_result = $arr3["K"];
+$no_of_squares = array_sum($arr3);
+printf("No. of black in result: %15d\n", $no_of_black_in_result);
+printf("No. of squares........: %15d\n", $no_of_squares);
+
+printf("Cyan..................: %15d\n", $arr3["C"]);
+printf("Magenta...............: %15d\n", $arr3["M"]);
+printf("Yellow................: %15d\n", $arr3["Y"]);
+printf("Black.................: %15d\n", $arr3["K"]);
+
+// the best product will include the black sqaures
+// but this isn't possible if there are too few black
+// including black means the number of black being about a third of the total
+// and allocating 2 mixed colors a third each
+if(floor($no_of_squares / 3) <= $no_of_black_in_result) {
+	print("Optimal solution using black!\n");
+	printf("Squares to allocate...: %15d\n", $no_of_squares);
+	$not_black = $no_of_squares - $no_of_black_in_result;
+	$a = floor($not_black / 2);
+	$b = ceil($not_black / 2);
+	$c = $no_of_black_in_result;
+	printf("Check this solution...:\n");
+	printf("......................: %15d *\n", $a);
+	printf("......................: %15d *\n", $b);
+	printf("......................: %15d =\n", $c);
+	printf("......................: %15d\n", $a * $b * $c);
+} else {
+	// this solution allocates the 3 mixed colors 1 third each
+	print("Black will be wasted.\n");
+	printf("Squares to allocate...: %15d\n", $no_of_squares - $no_of_black_in_result);
+	$not_black = $no_of_squares - $no_of_black_in_result;
+	$a = floor($not_black / 3);
+	$c = ceil($not_black / 3);
+	$b = $not_black - $a - $c;
+	printf("Check this solution...:\n");
+	printf("......................: %15d *\n", $a);
+	printf("......................: %15d *\n", $b);
+	printf("......................: %15d =\n", $c);
+	printf("......................: %15d\n", $a * $b * $c);
+}
+
 //printf("Result 3: %d\n", $hits);
 
 ?>
