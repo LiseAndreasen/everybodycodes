@@ -27,8 +27,39 @@ function get_input($input) {
 	return $data;
 }
 
+// https://stackoverflow.com/questions/5506888/permutations-all-possible-sets-of-numbers
+// create permutations
+function pc_permute($items, $perms = array( )) {
+	global $perms1;
+    if (empty($items)) { 
+    	$perms1[] = implode("", $perms);
+    }  else {
+        for ($i = count($items) - 1; $i >= 0; --$i) {
+             $newitems = $items;
+             $newperms = $perms;
+             list($foo) = array_splice($newitems, $i, 1);
+             array_unshift($newperms, $foo);
+             pc_permute($newitems, $newperms);
+         }
+    }
+}
+
 function count_crystals($data, $colors1, $colors2) {
-	// todo: implement conversion from 1234 to CMYK
+	$colors2_arr = str_split($colors2);
+	if(in_array(1, $colors2_arr)) {
+		// convert from 1234 to CMYK
+		$new_colors1 = str_split("CMYK");
+		$new_colors2 = [];
+		foreach($colors2_arr as $i => $c) {
+			$new_colors2[] = $new_colors1[(int)$c - 1];
+		}
+		foreach($data[1] as $i => $col) {
+			foreach($col as $j => $cell) {
+				$data[1][$i][$j] = $new_colors2[$cell - 1];
+			}
+		}
+	}
+
 	$result = [];
 	foreach($data[0] as $i => $col) {
 		foreach($col as $j => $cell) {
@@ -95,10 +126,25 @@ printf("Result 1: %d\n", $product);
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 2
 
-$file2 = './everybody_codes_e2026_q' . $quest . '_p2_ex1.txt';
-//$input = file_get_contents($file2, true);
-//$data = get_input($input);
-//printf("Result 2: %d\n", $hits);
+$file2 = './everybody_codes_e2026_q' . $quest . '_p2.txt';
+$input = file_get_contents($file2, true);
+$data = get_input($input);
+
+// construct all possible permutations
+$letters2 = str_split("1234");
+// result of permute ends up in perms1
+$perms1 = array();
+pc_permute($letters2);
+
+$maximum = 0;
+foreach($perms1 as $perm) {
+	$product = count_crystals($data, "CMYK", $perm);
+	if($maximum < $product) {
+		$maximum = $product;
+	}
+}
+
+printf("Result 2: %d\n", $maximum);
 
 ///////////////////////////////////////////////////////////////////////////
 // main program, part 3
